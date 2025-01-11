@@ -8,6 +8,10 @@ import menu_4 from "./menu_4.png";
 import menu_5 from "./menu_5.png";
 import menu_6 from "./menu_6.png";
 
+// products list
+import item_1 from "./item_1.png";
+import item_2 from "./item_2.png";
+
 import add_icon_white from "./add_icon_white.png";
 import add_icon_green from "./add_icon_green.png";
 import remove_icon_red from "./remove_icon_red.png";
@@ -69,5 +73,25 @@ export const menu_list = [
   {
     menu_name: "Nutrition",
     menu_image: menu_6,
+  },
+];
+
+export const product_list = [
+  {
+    _id: "1",
+    name: "Di-ammonium Phosphate",
+    image: item_1,
+    price: 1250,
+    description: " the world's most widely used phosphorus fertilizer",
+    category: "Fertilizer",
+  },
+  {
+    _id: "2",
+    name: "Potash",
+    image: item_2,
+    price: 1750,
+    description:
+      "includes various mined and manufactured salts that contain potassium in water-soluble form",
+    category: "Fertilizer",
   },
 ];
