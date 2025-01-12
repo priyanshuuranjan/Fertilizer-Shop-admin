@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "backend setup ",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "server": "nodemon server.js"
   },
