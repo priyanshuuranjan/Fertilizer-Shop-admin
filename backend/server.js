@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
+import productRouter from "./routes/productRoute.js";
 
 dotenv.config();
 
@@ -15,6 +16,10 @@ app.use(cors());
 
 //  database
 connectDB();
+
+// api endpoint
+app.use("/api/product", productRouter);
+app.use("/images", express.static("uploads"));
 
 app.get("/", (req, res) => {
   res.send("API Working");
