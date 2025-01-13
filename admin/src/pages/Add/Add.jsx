@@ -4,9 +4,10 @@ import { assets } from "../../assets/assets";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const Add = () => {
+const Add = ({ url }) => {
   // to get the backend data
-  const url = "http://localhost:8000";
+  //   const url = "http://localhost:8000"; -> now i pass the url through app.jsx as props
+
   const [image, setImage] = useState(false);
   const [data, setData] = useState({
     name: "",
