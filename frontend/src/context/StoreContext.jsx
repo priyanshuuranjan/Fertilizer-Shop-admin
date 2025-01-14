@@ -1,3 +1,4 @@
+import axios from "axios";
 import { createContext, useEffect, useState } from "react";
 import { product_list } from "../assets/assets";
 export const StoreContext = createContext(null);
@@ -9,6 +10,8 @@ const StoreContextProvider = (props) => {
 
   // to pas sth token to frontedn while login
   const [token, setToken] = useState("");
+
+  const [product_list, setProductList] = useState([]);
 
   // add to cart and remove to cart functionality
   const addToCart = (itemId) => {
@@ -35,12 +38,32 @@ const StoreContextProvider = (props) => {
     return totalAmount;
   };
 
+  // fetch the products that are upload via admin
+  const fetchProductList = async () => {
+    const response = await axios.get(url + "/api/product/list");
+    setProductList(response.data.data);
+  };
+
+  const loadCartData = async (token) => {
+    const response = await axios.post(
+      url + "/api/cart/get",
+      {},
+      { headers: { token } }
+    );
+    setCartItems(response.data.cartData);
+  };
+
   // ye logout hone se bachayega agr refresh kiye tb
   useEffect(() => {
-    if (localStorage.getItem("token")) {
-      setToken(localStorage.getItem("token"));
+    async function loadData() {
+      await fetchProductList();
+      if (localStorage.getItem("token")) {
+        setToken(localStorage.getItem("token"));
+        await loadCartData(localStorage.getItem("token"));
+      }
     }
-  });
+    loadData();
+  }, []);
 
   // pass context value to use in another components
   const contextValue = {
