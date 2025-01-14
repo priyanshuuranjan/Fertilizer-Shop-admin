@@ -35,6 +35,13 @@ const StoreContextProvider = (props) => {
     return totalAmount;
   };
 
+  // ye logout hone se bachayega agr refresh kiye tb
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      setToken(localStorage.getItem("token"));
+    }
+  });
+
   // pass context value to use in another components
   const contextValue = {
     product_list,

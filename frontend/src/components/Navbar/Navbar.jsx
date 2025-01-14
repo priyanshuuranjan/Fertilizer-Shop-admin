@@ -17,13 +17,6 @@ const Navbar = ({ setShowLogin }) => {
     navigate("/");
   };
 
-  // ye logout hone se bachayega agr refresh kiye tb
-  useEffect(() => {
-    if (localStorage.getItem("token")) {
-      setToken(localStorage.getItem("token"));
-    }
-  });
-
   return (
     <div className="navbar">
       <Link to="/">
