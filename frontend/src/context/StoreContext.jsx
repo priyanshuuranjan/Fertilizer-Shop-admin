@@ -4,6 +4,11 @@ export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
+  // to access backend data like JWT token
+  const url = "http://localhost:8000";
+
+  // to pas sth token to frontedn while login
+  const [token, setToken] = useState("");
 
   // add to cart and remove to cart functionality
   const addToCart = (itemId) => {
@@ -38,6 +43,9 @@ const StoreContextProvider = (props) => {
     addToCart,
     removeFromCart,
     getTotalCartAmount,
+    url,
+    token,
+    setToken,
   };
   return (
     <StoreContext.Provider value={contextValue}>
