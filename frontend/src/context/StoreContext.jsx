@@ -1,85 +1,102 @@
 import axios from "axios";
 import { createContext, useEffect, useState } from "react";
-import { product_list } from "../assets/assets";
+
 export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
-  // to access backend data like JWT token
+  const [token, setToken] = useState("");
+  const [product_list, setProductList] = useState([]);
   const url = "http://localhost:8000";
 
-  // to pas sth token to frontedn while login
-  const [token, setToken] = useState("");
-
-  const [product_list, setProductList] = useState([]);
-
-  // add to cart and remove to cart functionality
+  // Add to cart functionality
   const addToCart = async (itemId) => {
-    if (!cartItems[itemId]) {
-      setCartItems((prev) => ({ ...prev, [itemId]: 1 }));
-    } else {
-      setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] + 1 }));
-    }
+    setCartItems((prev) => ({
+      ...prev,
+      [itemId]: (prev[itemId] || 0) + 1,
+    }));
+
     if (token) {
       await axios.post(
-        url + "/api/cart/add",
+        `${url}/api/cart/add`,
         { itemId },
         { headers: { token } }
       );
     }
   };
 
+  // Remove from cart functionality
   const removeFromCart = async (itemId) => {
-    setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] - 1 }));
+    setCartItems((prev) => ({
+      ...prev,
+      [itemId]: Math.max((prev[itemId] || 0) - 1, 0),
+    }));
+
     if (token) {
       await axios.post(
-        url + "/api/cart/remove",
+        `${url}/api/cart/remove`,
         { itemId },
         { headers: { token } }
       );
     }
   };
 
-  // amount section
+  // Cal total cart amount
   const getTotalCartAmount = () => {
     let totalAmount = 0;
     for (const item in cartItems) {
       if (cartItems[item] > 0) {
-        let itemInfo = product_list.find((product) => product._id === item);
-        totalAmount += itemInfo.price * cartItems[item];
+        const itemInfo = product_list.find(
+          (product) => String(product._id) === String(item)
+        );
+        if (itemInfo) {
+          totalAmount += itemInfo.price * cartItems[item];
+        } else {
+          console.warn(`Product with ID ${item} not found in product_list.`);
+        }
       }
     }
     return totalAmount;
   };
 
-  // fetch the products that are upload via admin
+  // Fetch product list from backend
   const fetchProductList = async () => {
-    const response = await axios.get(url + "/api/product/list");
-    setProductList(response.data.data);
-  };
-
-  const loadCartData = async (token) => {
-    const response = await axios.post(
-      url + "/api/cart/get",
-      {},
-      { headers: { token } }
-    );
-    setCartItems(response.data.cartData);
-  };
-
-  // ye logout hone se bachayega agr refresh kiye tb
-  useEffect(() => {
-    async function loadData() {
-      await fetchProductList();
-      if (localStorage.getItem("token")) {
-        setToken(localStorage.getItem("token"));
-        await loadCartData(localStorage.getItem("token"));
-      }
+    try {
+      const response = await axios.get(`${url}/api/product/list`);
+      setProductList(response.data.data);
+    } catch (error) {
+      console.error("Error fetching product list:", error);
     }
+  };
+
+  // Load cart data for authenticated user
+  const loadCartData = async (token) => {
+    try {
+      const response = await axios.post(
+        `${url}/api/cart/get`,
+        {},
+        { headers: { token } }
+      );
+      setCartItems(response.data.cartData || {});
+    } catch (error) {
+      console.error("Error loading cart data:", error);
+    }
+  };
+
+  // Effect to load initial data
+  useEffect(() => {
+    const loadData = async () => {
+      await fetchProductList();
+      const savedToken = localStorage.getItem("token");
+      if (savedToken) {
+        setToken(savedToken);
+        await loadCartData(savedToken);
+      }
+    };
     loadData();
   }, []);
 
-  // pass context value to use in another components
+  // Context value
   const contextValue = {
     product_list,
     cartItems,
@@ -91,10 +108,12 @@ const StoreContextProvider = (props) => {
     token,
     setToken,
   };
+
   return (
     <StoreContext.Provider value={contextValue}>
       {props.children}
     </StoreContext.Provider>
   );
 };
+
 export default StoreContextProvider;
