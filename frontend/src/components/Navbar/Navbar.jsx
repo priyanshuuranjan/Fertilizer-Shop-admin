@@ -3,7 +3,7 @@ import "./Navbar.css";
 import { Link, useNavigate } from "react-router-dom";
 import { assets } from "../../assets/assets";
 import { StoreContext } from "../../context/StoreContext";
-import { useEffect } from "react";
+
 
 const Navbar = ({ setShowLogin }) => {
   const [menu, setMenu] = useState("home");
@@ -53,7 +53,7 @@ const Navbar = ({ setShowLogin }) => {
         </a>
       </ul>
       <div className="navbar-right">
-        <img src={assets.search_icon} alt="search icon" />
+        {/* <img src={assets.search_icon} alt="search icon" /> */}
         <div className="navbar-search-icon">
           <Link to="/cart">
             <img className="basketlogo" src={assets.basket_icon} alt="" />

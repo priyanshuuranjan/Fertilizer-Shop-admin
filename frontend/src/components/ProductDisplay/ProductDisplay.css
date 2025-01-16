@@ -14,11 +14,4 @@
   row-gap: 50px;
 }
 
-:root .h2we {
-  color: white;
-}
 
-/* Remove filter from h2 elements in lightcolors theme */
-.lightcolors .h2we {
-  color: black;
-}
