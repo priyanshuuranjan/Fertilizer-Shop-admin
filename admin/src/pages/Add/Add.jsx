@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 
 const Add = ({ url }) => {
   // to get the backend data
-  //   const url = "http://localhost:8000"; -> now i pass the url through app.jsx as props
+  // const url = "http://localhost:8000"; -> now i pass the url through app.jsx as props
 
   const [image, setImage] = useState(false);
   const [data, setData] = useState({
@@ -36,7 +36,7 @@ const Add = ({ url }) => {
         name: "",
         description: "",
         price: "",
-        category: "Salad",
+        category: "",
       });
       setImage(false);
       toast.success(response.data.message);
@@ -89,14 +89,18 @@ const Add = ({ url }) => {
         <div className="add-category-price">
           <div className="add-category flex-col">
             <p>Product Category</p>
-            <select className="selectt" name="category" required>
-              {" "}
-              <option value="Salad">Fertilizer</option>{" "}
-              <option value="Rolls">Pesticide</option>{" "}
-              <option value="Deserts">Seed</option>{" "}
-              <option value="Sandwich">Herbicide</option>{" "}
-              <option value="Cake">Equipment</option>{" "}
-              <option value="Pure Veg">Nutrition</option>{" "}
+            <select
+              className="selectt"
+              onChange={onChangeHandler}
+              name="category"
+              value={data.category}
+            >
+              <option value="Fertilizer">Fertilizer</option>
+              <option value="Pesticide">Pesticide</option>
+              <option value="Seed">Seeds</option>
+              <option value="Herbicide">Herbicide</option>
+              <option value="Equipment">Equipment</option>
+              <option value="Nutrition">Nutrition</option>
             </select>
           </div>
           <div className="add-price flex-col">
