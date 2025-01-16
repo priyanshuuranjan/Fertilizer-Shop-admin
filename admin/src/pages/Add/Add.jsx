@@ -112,6 +112,7 @@ const Add = ({ url }) => {
               type="Number"
               name="price"
               placeholder="₹200"
+              required
             />
           </div>
         </div>
