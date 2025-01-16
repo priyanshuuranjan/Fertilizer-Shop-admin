@@ -84,7 +84,7 @@ const userOrders = async (req, res) => {
   }
 };
 
-// Listing orders for admin panel
+// Listing order for admin panel
 const listOrders = async (req, res) => {
   try {
     const orders = await orderModel.find({});
@@ -95,7 +95,7 @@ const listOrders = async (req, res) => {
   }
 };
 
-// api for updating order status
+// making  api for updating order status on frontend
 const updateStatus = async (req, res) => {
   try {
     await orderModel.findByIdAndUpdate(req.body.orderId, {
