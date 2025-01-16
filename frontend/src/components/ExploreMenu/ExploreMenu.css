@@ -30,10 +30,12 @@
 
 .explore-menu-list-item img {
   width: 7.5vw;
-  min-width: 80px;
+  min-width: 130px;
   cursor: pointer;
   border-radius: 50%;
   transition: 0.2s;
+  height: 140px;
+  object-fit: cover;
 }
 
 .explore-menu-list-item p {
@@ -55,21 +57,31 @@
   padding: 2px;
 }
 
-:root .explore-menu-text,
-:root .item_menu,
-:root .h1e {
-  color: white;
-}
-
-.lightcolors .explore-menu-text,
-.lightcolors .item_menu,
-.lightcolors .h1e {
-  color: black;
-}
-
 @media (max-width: 1050px) {
   .explore-menu-text {
     max-width: 100%;
     font-size: 14px;
   }
 }
+@media (max-width: 768px) {
+  .explore-menu-list {
+    flex-wrap: wrap; 
+    gap: 20px; 
+  }
+
+  .explore-menu-list-item img {
+    width: 18vw; 
+    height: 120px; 
+  }
+
+  .explore-menu-list-item p {
+    font-size: 20px; 
+  }
+}
+
+/* explore-menu-list-item img {
+  width: 30vw; 
+  height: 100px; 
+  min-width: unset; 
+  max-width: unset;
+} */
