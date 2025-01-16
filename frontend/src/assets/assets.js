@@ -55,15 +55,15 @@ export const menu_list = [
     menu_image: menu_2,
   },
   {
-    menu_name: "Seeds",
+    menu_name: "Seed",
     menu_image: menu_2,
   },
   {
-    menu_name: "Pesticides",
+    menu_name: "Pesticide",
     menu_image: menu_2,
   },
   {
-    menu_name: "Herbicides",
+    menu_name: "Herbicide",
     menu_image: menu_4,
   },
   {
