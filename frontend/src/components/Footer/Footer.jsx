@@ -1,5 +1,6 @@
 import "./Footer.css";
 import { assets } from "../../assets/assets";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -16,17 +17,23 @@ const Footer = () => {
           </p>
 
           <div className="footer-social-icons">
-            <img src={assets.facebook_icon} alt="" />
-            <img src={assets.twitter_icon} alt="" />
-            <img src={assets.linkedin_icon} alt="" />
+            <a href="https://www.instagram.com/priyanshuu.singh___/" target="_blank" rel="noopener noreferrer">
+              <img src={assets.insta_icon} alt="Instagram" />
+            </a>
+            <a href="https://github.com/priyanshuuranjan" target="_blank" rel="noopener noreferrer">
+              <img src={assets.github_icon} alt="GitHub" />
+            </a>
+            <a href="https://www.linkedin.com/in/priyanshuranjan45/" target="_blank" rel="noopener noreferrer">
+              <img src={assets.linkedin_icon} alt="LinkedIn" />
+            </a>
           </div>
         </div>
         <div className="footer-content-center">
           <ul>
-            <li>Home</li>
-            <li>About us</li>
-            <li>Delivery</li>
-            <li>Privacy Policy</li>
+            <li><Link to="/">Home</Link></li>
+            <li><Link to="/contact">Contact</Link></li>
+            <li><Link to="/myorders">Delivery</Link></li>
+            <li><Link to="/">Privacy Policy</Link></li>
           </ul>
         </div>
         <div className="footer-content-right">
@@ -40,9 +47,7 @@ const Footer = () => {
       <hr />
 
       <p className="footer-copyright">
-        {/* auto update year on footer */}
-        &copy; {new Date().getFullYear()} <b>Kumar Fertilizer</b>. All Rights
-        Reserved.
+        &copy; {new Date().getFullYear()} <b>Kumar Fertilizer</b>. All Rights Reserved.
       </p>
     </div>
   );
