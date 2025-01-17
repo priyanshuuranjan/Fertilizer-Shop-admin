@@ -13,6 +13,7 @@ const Add = ({ url }) => {
     name: "",
     description: "",
     price: "",
+    size: "",
     category: "Fertilizer",
   });
 
@@ -29,6 +30,7 @@ const Add = ({ url }) => {
     formData.append("description", data.description);
     formData.append("price", Number(data.price));
     formData.append("category", data.category);
+    formData.append("size", data.size); // Append the size field
     formData.append("image", image);
     const response = await axios.post(`${url}/api/product/add`, formData);
     if (response.data.success) {
@@ -96,12 +98,24 @@ const Add = ({ url }) => {
               value={data.category}
             >
               <option value="Fertilizer">Fertilizer</option>
-              <option value="Pesticide">Pesticide</option>
-              <option value="Seed">Seeds</option>
+              <option value="Fungicides">Fungicides</option>
+              <option value="Vegetable Seeds">Vegetable Seeds</option>
               <option value="Herbicide">Herbicide</option>
-              <option value="Equipment">Equipment</option>
-              <option value="Nutrition">Nutrition</option>
+              <option value="Farm Machinery">Farm Machinery</option>
+              <option value="Nutrients">Nutrients</option>
             </select>
+          </div>
+          <div className="add-price flex-col">
+            <p>Product Size</p>
+            <input
+              className="inputclasa"
+              onChange={onChangeHandler}
+              value={data.size}
+              type="text"
+              name="size"
+              placeholder="Size (gm, ml, L)"
+              required
+            />
           </div>
           <div className="add-price flex-col">
             <p>Product Price</p>

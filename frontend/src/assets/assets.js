@@ -55,11 +55,11 @@ export const menu_list = [
     menu_image: menu_1,
   },
   {
-    menu_name: "Seed",
+    menu_name: "Vegetable Seeds",
     menu_image: menu_2,
   },
   {
-    menu_name: "Pesticide",
+    menu_name: "Fungicides",
     menu_image: menu_3,
   },
   {
@@ -67,11 +67,11 @@ export const menu_list = [
     menu_image: menu_4,
   },
   {
-    menu_name: "Equipment",
+    menu_name: "Farm Machinery",
     menu_image: menu_5,
   },
   {
-    menu_name: "Nutrition",
+    menu_name: "Nutrients",
     menu_image: menu_6,
   },
 ];

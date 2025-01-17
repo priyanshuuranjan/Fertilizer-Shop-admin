@@ -2,7 +2,7 @@ import productModel from "../models/productModel.js";
 import fs from "fs/promises";
 const addProduct = async (req, res) => {
   try {
-    const { name, description, price, category } = req.body;
+    const { name, description, price,size, category } = req.body;
 
     // Handle the file upload
     const image_filename = req.file ? req.file.filename : undefined;
@@ -12,6 +12,7 @@ const addProduct = async (req, res) => {
       description,
       price,
       category,
+      size,
       image: image_filename,
     });
 
