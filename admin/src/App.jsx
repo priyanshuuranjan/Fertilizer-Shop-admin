@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 
 const App = () => {
-  const url = "http://localhost:8000";
+  const url = import.meta.env.VITE_API_URL;
   return (
     <div>
       <ToastContainer />
