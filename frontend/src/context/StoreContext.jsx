@@ -7,7 +7,8 @@ const StoreContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
   const [token, setToken] = useState("");
   const [product_list, setProductList] = useState([]);
-  // use proxy
+
+  // uses proxy
   const url = import.meta.env.VITE_API_URL;
 
   // Add to cart functionality
