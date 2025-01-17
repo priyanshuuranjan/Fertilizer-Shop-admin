@@ -21,6 +21,7 @@ const ProductDisplay = ({ category }) => {
                 description={item.description}
                 price={item.price}
                 image={item.image}
+                size={item.size}
               />
             );
           }

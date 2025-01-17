@@ -39,7 +39,9 @@ const List = ({ url }) => {
           <b>Image</b>
           <b>Name</b>
           <b>Category</b>
+          <b>Size</b>
           <b>Price</b>
+          
           <b>Action</b>
         </div>
         {list.map((item, index) => {
@@ -48,6 +50,7 @@ const List = ({ url }) => {
               <img src={`${url}/images/` + item.image} alt="" />
               <p>{item.name}</p>
               <p>{item.category}</p>
+              <p>{item.size}</p>
               <p>₹{item.price}</p>
               <p onClick={() => removeProduct(item._id)} className="cursor">
                 X

@@ -3,14 +3,18 @@ import "./ProductItem.css";
 import { assets } from "../../assets/assets";
 import { StoreContext } from "../../context/StoreContext";
 
-const ProductItem = ({ id, name, price, description, image }) => {
+const ProductItem = ({ id, name, price, description, image, size }) => {
   const { cartItems, addToCart, removeFromCart, url } =
     useContext(StoreContext);
 
   return (
     <div className="product-item">
       <div className="product-item-img-container">
-        <img className="product-item-image" src={url+"/images/"+image} alt="" />
+        <img
+          className="product-item-image"
+          src={url + "/images/" + image}
+          alt=""
+        />
         {!cartItems[id] ? (
           <img
             className="add"
@@ -40,7 +44,10 @@ const ProductItem = ({ id, name, price, description, image }) => {
           <img className="ratingstars" src={assets.rating_starts} alt="" />
         </div>
         <p className="product-item-desc">{description}</p>
-        <p className="product-item-price">₹{price}</p>
+        <div className="product-item-price-size">
+          <p className="product-item-price">₹{price}</p>
+          <p className="product-item-size">Size: {size}</p>
+        </div>
       </div>
     </div>
   );
