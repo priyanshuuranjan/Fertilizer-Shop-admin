@@ -7,7 +7,7 @@
 ## 🚀 Features
 
 - **Product Browsing**: Explore a wide variety of fertilizers, seeds, and farming tools with detailed descriptions and images.
-- **Secure Authentication**: User and admin authentication powered by Firebase and JWT tokens to ensure secure login processes.
+- **Secure Authentication**: User and admin authentication powered by JWT tokens to ensure secure login processes.
 - **Online Payments**: Integrated with Stripe for smooth, secure, and reliable payment processing.
 - **Admin Panel**: An easy-to-use admin panel to manage products, orders, and inventory.
 - **Responsive Design**: Optimized for mobile, tablet, and desktop devices, ensuring a seamless experience across all platforms.
@@ -19,7 +19,7 @@
 - **Frontend**: 
   - React.js (for building the user interface)
   - Redux Toolkit (for state management)
-  - Tailwind CSS (for responsive and customizable styling)
+  - CSS (for responsive and customizable styling)
 
 - **Backend**: 
   - Node.js (JavaScript runtime)
