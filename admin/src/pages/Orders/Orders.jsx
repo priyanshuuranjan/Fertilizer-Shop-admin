@@ -3,17 +3,25 @@ import "./Orders.css";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { assets } from "../../assets/assets";
+import { OrderCardSkeleton } from "../../components/Skeleton/Skeleton";
 
 const Orders = ({ url }) => {
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchAllOrders = async () => {
-    const response = await axios.get(url + "/api/order/list");
-    if (response.data.success) {
-      setOrders(response.data.data);
-      console.log(response.data.data);
-    } else {
+    setLoading(true);
+    try {
+      const response = await axios.get(url + "/api/order/list");
+      if (response.data.success) {
+        setOrders(response.data.data);
+      } else {
+        toast.error("Error");
+      }
+    } catch (error) {
       toast.error("Error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -35,7 +43,9 @@ const Orders = ({ url }) => {
     <div className="order add">
       <h3>Order Page</h3>
       <div className="order-list">
-        {orders.map((order, index) => (
+        {loading
+          ? Array.from({ length: 4 }).map((_, i) => <OrderCardSkeleton key={i} />)
+          : orders.map((order, index) => (
           <div key={index} className="order-item">
             <img src={assets.parcel_icon} alt="" />
             <div>
@@ -77,7 +87,7 @@ const Orders = ({ url }) => {
               <option value="Delivered">Delivered</option>
             </select>
           </div>
-        ))}
+            ))}
       </div>
     </div>
   );

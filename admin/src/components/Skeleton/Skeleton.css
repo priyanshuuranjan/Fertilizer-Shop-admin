@@ -1,0 +1,39 @@
+/* Base shimmer block — moving light band over a soft grey base,
+   the same loading effect Facebook / YouTube use. */
+.skeleton {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  background-color: #e9e9e9;
+  background-image: linear-gradient(
+    90deg,
+    #e9e9e9 0px,
+    #f4f4f4 50px,
+    #e9e9e9 100px
+  );
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  border-radius: 6px;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -150px 0;
+  }
+  100% {
+    background-position: calc(150px + 100%) 0;
+  }
+}
+
+.skeleton-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}

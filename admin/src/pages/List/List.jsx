@@ -2,16 +2,25 @@ import { useEffect, useState } from "react";
 import "./List.css";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { ListRowSkeleton } from "../../components/Skeleton/Skeleton";
 
 const List = ({ url }) => {
   const [list, setList] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchList = async () => {
-    const response = await axios.get(`${url}/api/product/list`);
-    if (response.data.success) {
-      setList(response.data.data);
-    } else {
+    setLoading(true);
+    try {
+      const response = await axios.get(`${url}/api/product/list`);
+      if (response.data.success) {
+        setList(response.data.data);
+      } else {
+        toast.error("Error");
+      }
+    } catch (error) {
       toast.error("Error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -44,7 +53,9 @@ const List = ({ url }) => {
           
           <b>Action</b>
         </div>
-        {list.map((item, index) => {
+        {loading
+          ? Array.from({ length: 6 }).map((_, i) => <ListRowSkeleton key={i} />)
+          : list.map((item, index) => {
           return (
             <div key={index} className="list-table-format">
               <img src={`${url}/images/` + item.image} alt="" />
@@ -57,7 +68,7 @@ const List = ({ url }) => {
               </p>
             </div>
           );
-        })}
+            })}
       </div>
     </div>
   );
