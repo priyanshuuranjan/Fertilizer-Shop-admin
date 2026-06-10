@@ -3,23 +3,34 @@ import "./MyOrders.css";
 import { StoreContext } from "../../context/StoreContext";
 import axios from "axios";
 import { assets } from "../../assets/assets";
+import { OrderRowSkeleton } from "../../components/Skeleton/Skeleton";
 
 const MyOrders = () => {
   const { url, token } = useContext(StoreContext);
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchOrders = async () => {
-    const response = await axios.post(
-      url + "/api/order/userorders",
-      {},
-      { headers: { token } }
-    );
-    setData(response.data.data);
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        url + "/api/order/userorders",
+        {},
+        { headers: { token } }
+      );
+      setData(response.data.data);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     if (token) {
       fetchOrders();
+    } else {
+      setLoading(false);
     }
   }, [token]);
 
@@ -27,7 +38,12 @@ const MyOrders = () => {
     <div className="my-orders">
       <h2 className="myordersp">My Orders</h2>
       <div className="container">
-        {data.map((order, index) => {
+        {loading ? (
+          Array.from({ length: 4 }).map((_, i) => <OrderRowSkeleton key={i} />)
+        ) : data.length === 0 ? (
+          <p className="my-orders-empty">You have no orders yet.</p>
+        ) : (
+          data.map((order, index) => {
           return (
             <div key={index} className="my-orders-order">
               <img src={assets.parcel_icon} alt="" />
@@ -48,7 +64,8 @@ const MyOrders = () => {
               <button onClick={fetchOrders}>Track Order</button>
             </div>
           );
-        })}
+          })
+        )}
       </div>
     </div>
   );
