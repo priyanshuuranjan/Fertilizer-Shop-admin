@@ -14,4 +14,31 @@
   row-gap: 50px;
 }
 
+.product-display-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 40px;
+  padding: 40px 20px;
+  color: #555;
+  font-size: 16px;
+  text-align: center;
+}
+
+.product-display-retry {
+  padding: 10px 28px;
+  border: none;
+  border-radius: 30px;
+  background-color: tomato;
+  color: #fff;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.product-display-retry:hover {
+  background-color: #e5533c;
+}
+
 
