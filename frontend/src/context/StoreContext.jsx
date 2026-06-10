@@ -7,6 +7,8 @@ const StoreContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
   const [token, setToken] = useState("");
   const [product_list, setProductList] = useState([]);
+  const [productsLoading, setProductsLoading] = useState(true);
+  const [productsError, setProductsError] = useState(false);
 
   // uses proxy
   const url = import.meta.env.VITE_API_URL;
@@ -63,11 +65,16 @@ const StoreContextProvider = (props) => {
 
   // Fetch product list from backend
   const fetchProductList = async () => {
+    setProductsLoading(true);
+    setProductsError(false);
     try {
       const response = await axios.get(`${url}/api/product/list`);
-      setProductList(response.data.data);
+      setProductList(response.data.data || []);
     } catch (error) {
       console.error("Error fetching product list:", error);
+      setProductsError(true);
+    } finally {
+      setProductsLoading(false);
     }
   };
 
@@ -101,6 +108,9 @@ const StoreContextProvider = (props) => {
   // Context value
   const contextValue = {
     product_list,
+    productsLoading,
+    productsError,
+    fetchProductList,
     cartItems,
     setCartItems,
     addToCart,
