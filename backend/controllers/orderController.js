@@ -1,21 +1,49 @@
 import orderModel from "../models/orderModel.js";
 import userModel from "../models/userModel.js";
+import promoModel from "../models/promoModel.js";
+import { evaluatePromo } from "./promoController.js";
 import Stripe from "stripe";
 import dotenv from "dotenv";
 
 dotenv.config();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
+const DELIVERY_FEE = 45;
+
 // placing user order from frontend
 const placeOrder = async (req, res) => {
   const frontend_url = process.env.FRONTEND_URL;
 
   try {
+    // Recompute the subtotal from the items server-side (don't trust client amount)
+    const subtotal = req.body.items.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+
+    // Re-validate the promo server-side; ignore it silently if it no longer applies
+    let discount = 0;
+    let appliedCode = "";
+    if (req.body.promoCode) {
+      const promo = await promoModel.findOne({
+        code: String(req.body.promoCode).toUpperCase().trim(),
+      });
+      const result = evaluatePromo(promo, subtotal, req.body.userId);
+      if (result.ok) {
+        discount = result.discount;
+        appliedCode = promo.code;
+      }
+    }
+
+    const amount = subtotal + DELIVERY_FEE - discount;
+
     const newOrder = new orderModel({
       userId: req.body.userId,
       items: req.body.items,
-      amount: req.body.amount,
+      amount,
       address: req.body.address,
+      promoCode: appliedCode,
+      discount,
     });
     await newOrder.save();
     await userModel.findByIdAndUpdate(req.body.userId, { cartData: {} });
@@ -37,14 +65,27 @@ const placeOrder = async (req, res) => {
         product_data: {
           name: "Delivery Charges",
         },
-        unit_amount: 45 * 100,
+        unit_amount: DELIVERY_FEE * 100,
       },
       quantity: 1,
     });
 
+    // Apply the discount in Stripe via a one-time coupon
+    let discounts = [];
+    if (discount > 0) {
+      const coupon = await stripe.coupons.create({
+        amount_off: discount * 100,
+        currency: "inr",
+        duration: "once",
+        name: `Promo ${appliedCode}`,
+      });
+      discounts = [{ coupon: coupon.id }];
+    }
+
     const session = await stripe.checkout.sessions.create({
       line_items: line_items,
       mode: "payment",
+      discounts,
       success_url: `${frontend_url}/verify?success=true&orderId=${newOrder._id}`,
       cancel_url: `${frontend_url}/verify?success=false&orderId=${newOrder._id}`,
     });
@@ -60,7 +101,17 @@ const verifyOrder = async (req, res) => {
   const { orderId, success } = req.body;
   try {
     if (success == "true") {
-      await orderModel.findByIdAndUpdate(orderId, { payment: true });
+      const order = await orderModel.findByIdAndUpdate(orderId, {
+        payment: true,
+      });
+      // Burn the promo for this user only after a confirmed payment, so a
+      // cancelled checkout never costs them their one-time code.
+      if (order && order.promoCode) {
+        await promoModel.updateOne(
+          { code: order.promoCode },
+          { $addToSet: { usedBy: order.userId } }
+        );
+      }
       res.json({ success: true, message: "Paid" });
     } else {
       await orderModel.findByIdAndDelete(orderId);

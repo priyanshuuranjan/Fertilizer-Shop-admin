@@ -82,6 +82,41 @@
   cursor: pointer;
 }
 
+.cart-discount p {
+  color: #1a7431;
+  font-weight: 600;
+}
+.cart-promocode-applied {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #e3f6e8;
+  border-radius: 4px;
+  padding: 0 12px;
+}
+.cart-promocode-applied p {
+  color: #1a7431;
+}
+.cart-promocode-applied button {
+  border: none;
+  background: transparent;
+  color: #c0392b;
+  cursor: pointer;
+  font-weight: 600;
+  padding: 12px 0;
+}
+.promo-msg {
+  margin-top: 8px;
+  font-size: 13px;
+}
+.promo-msg.ok {
+  color: #1a7431;
+}
+.promo-msg.err {
+  color: #c0392b;
+}
+
 @media (max-width: 750px) {
   .cart-bottom {
     flex-direction: column-reverse;
