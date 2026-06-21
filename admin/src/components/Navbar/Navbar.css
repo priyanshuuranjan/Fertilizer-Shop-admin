@@ -25,6 +25,26 @@
   width: 40px;
 }
 
+@media (max-width: 480px) {
+  .navbar {
+    padding: 8px 4%;
+  }
+  .navbar .logo {
+    font-size: 15px;
+  }
+  .navbar .logo .admin {
+    font-size: 12px;
+  }
+  .admin-logout {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+  #visual-toggle-button {
+    width: 96px;
+    height: 34px;
+  }
+}
+
 #visual-toggle-button {
   width: 140px;
   height: 40px;

@@ -36,3 +36,19 @@
 .advisor-banner:hover .advisor-banner-btn {
   background-color: #fdf6e3;
 }
+
+@media (max-width: 600px) {
+  .advisor-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 18px 18px;
+    gap: 12px;
+  }
+  .advisor-banner h3 {
+    font-size: 17px;
+  }
+  .advisor-banner-btn {
+    width: 100%;
+    text-align: center;
+  }
+}

@@ -22,13 +22,16 @@
   cursor: pointer;
 }
 
-@media (max-width: 600px) {
-  .list-table-format {
-    grid-template-columns: 1fr 3fr 1fr; /* Simplified for mobile view */
-    gap: 15px;
+@media (max-width: 768px) {
+  .list {
+    width: 100%;
   }
-
-  .list-table-format.title {
-    display: none;
+  /* keep all columns aligned by scrolling instead of scrambling them */
+  .list-table {
+    overflow-x: auto;
+  }
+  .list-table-format {
+    grid-template-columns: 0.5fr 2fr 1fr 1fr 1fr 0.5fr;
+    min-width: 540px;
   }
 }
