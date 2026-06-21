@@ -5,6 +5,8 @@ const orderSchema = new mongoose.Schema({
   items: { type: Array, required: true },
   amount: { type: Number, required: true },
   address: { type: Object, required: true },
+  promoCode: { type: String, default: "" },
+  discount: { type: Number, default: 0 },
   status: { type: String, default: "Order Processing" },
   date: { type: Date, default: Date.now() },
   payment: { type: Boolean, default: false },

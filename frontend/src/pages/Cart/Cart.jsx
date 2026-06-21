@@ -1,13 +1,45 @@
 import "./Cart.css";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { StoreContext } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
-  const { cartItems, product_list, removeFromCart, getTotalCartAmount, url } =
-    useContext(StoreContext);
+  const {
+    cartItems,
+    product_list,
+    removeFromCart,
+    getTotalCartAmount,
+    url,
+    deliveryFee,
+    appliedPromo,
+    applyPromoCode,
+    removePromoCode,
+    getDiscount,
+  } = useContext(StoreContext);
 
   const navigate = useNavigate();
+
+  const [promoInput, setPromoInput] = useState("");
+  const [promoMsg, setPromoMsg] = useState(null); // { type: "ok"|"err", text }
+
+  const subtotal = getTotalCartAmount();
+  const discount = getDiscount();
+  const total = subtotal === 0 ? 0 : subtotal + deliveryFee - discount;
+
+  const handleApplyPromo = async () => {
+    if (!promoInput.trim()) {
+      setPromoMsg({ type: "err", text: "Enter a promo code" });
+      return;
+    }
+    const res = await applyPromoCode(promoInput.trim());
+    setPromoMsg({ type: res.success ? "ok" : "err", text: res.message });
+    if (res.success) setPromoInput("");
+  };
+
+  const handleRemovePromo = () => {
+    removePromoCode();
+    setPromoMsg(null);
+  };
 
   return (
     <div className="cart">
@@ -52,14 +84,21 @@ const Cart = () => {
             <hr />
             <div className="cart-total-details">
               <p>Delivery Fee</p>
-              <p>₹{getTotalCartAmount() === 0 ? 0 : 45}</p>
+              <p>₹{subtotal === 0 ? 0 : deliveryFee}</p>
             </div>
             <hr />
+            {discount > 0 && (
+              <>
+                <div className="cart-total-details cart-discount">
+                  <p>Discount ({appliedPromo.code})</p>
+                  <p>− ₹{discount}</p>
+                </div>
+                <hr />
+              </>
+            )}
             <div className="cart-total-details">
               <b>Total</b>
-              <b>
-                ₹{getTotalCartAmount() === 0 ? 0 : getTotalCartAmount() + 45}
-              </b>
+              <b>₹{total}</b>
             </div>
           </div>
           <button onClick={() => navigate("/order")}>
@@ -71,10 +110,34 @@ const Cart = () => {
             <p className="promocodep">
               If you have a promo code, Enter it here
             </p>
-            <div className="cart-promocode-input">
-              <input type="text" placeholder="Promo Code" />
-              <button>Submit</button>
-            </div>
+            {appliedPromo && getDiscount() > 0 ? (
+              <div className="cart-promocode-applied">
+                <p>
+                  <b>{appliedPromo.code}</b> applied — you saved ₹{getDiscount()}
+                </p>
+                <button onClick={handleRemovePromo}>Remove</button>
+              </div>
+            ) : (
+              <div className="cart-promocode-input">
+                <input
+                  type="text"
+                  placeholder="Promo Code"
+                  value={promoInput}
+                  onChange={(e) => setPromoInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleApplyPromo()}
+                />
+                <button onClick={handleApplyPromo}>Submit</button>
+              </div>
+            )}
+            {promoMsg && (
+              <p
+                className={
+                  promoMsg.type === "ok" ? "promo-msg ok" : "promo-msg err"
+                }
+              >
+                {promoMsg.text}
+              </p>
+            )}
           </div>
         </div>
       </div>

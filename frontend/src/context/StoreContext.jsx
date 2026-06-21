@@ -9,9 +9,15 @@ const StoreContextProvider = (props) => {
   const [product_list, setProductList] = useState([]);
   const [productsLoading, setProductsLoading] = useState(true);
   const [productsError, setProductsError] = useState(false);
+  const [appliedPromo, setAppliedPromo] = useState(() => {
+    const saved = localStorage.getItem("appliedPromo");
+    return saved ? JSON.parse(saved) : null;
+  });
 
   // uses proxy
   const url = import.meta.env.VITE_API_URL;
+
+  const deliveryFee = 45;
 
   // Add to cart functionality
   const addToCart = async (itemId) => {
@@ -61,6 +67,39 @@ const StoreContextProvider = (props) => {
       }
     }
     return totalAmount;
+  };
+
+  // Apply a promo code against the current subtotal
+  const applyPromoCode = async (code) => {
+    const subtotal = getTotalCartAmount();
+    try {
+      const response = await axios.post(
+        `${url}/api/promo/apply`,
+        { code, subtotal },
+        { headers: { token } }
+      );
+      if (response.data.success) {
+        const promo = { code: response.data.code, discount: response.data.discount };
+        setAppliedPromo(promo);
+        localStorage.setItem("appliedPromo", JSON.stringify(promo));
+      }
+      return response.data;
+    } catch (error) {
+      console.error("Error applying promo code:", error);
+      return { success: false, message: "Error applying promo code" };
+    }
+  };
+
+  // Remove the currently applied promo code
+  const removePromoCode = () => {
+    setAppliedPromo(null);
+    localStorage.removeItem("appliedPromo");
+  };
+
+  // Discount currently applied, clamped to the subtotal
+  const getDiscount = () => {
+    if (!appliedPromo) return 0;
+    return Math.min(appliedPromo.discount, getTotalCartAmount());
   };
 
   // Fetch product list from backend
@@ -119,6 +158,11 @@ const StoreContextProvider = (props) => {
     url,
     token,
     setToken,
+    deliveryFee,
+    appliedPromo,
+    applyPromoCode,
+    removePromoCode,
+    getDiscount,
   };
 
   return (
