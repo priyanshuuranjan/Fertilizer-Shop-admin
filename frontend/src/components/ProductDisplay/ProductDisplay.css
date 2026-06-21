@@ -41,4 +41,12 @@
   background-color: #e5533c;
 }
 
+@media (max-width: 480px) {
+  .product-display-list {
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    row-gap: 24px;
+  }
+}
+
 

@@ -40,3 +40,28 @@
 label img[src*="assets/upload_area"] {
   filter: var(--upload);
 }
+
+@media (max-width: 768px) {
+  .add {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 20px;
+    padding: 0 14px;
+  }
+}
+
+@media (max-width: 600px) {
+  .add-category-price {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .add-category-price select,
+  .add-category-price input {
+    max-width: 100%;
+    width: 100%;
+  }
+  .add-btn {
+    max-width: 100%;
+    width: 100%;
+  }
+}

@@ -7,6 +7,7 @@ import { StoreContext } from "../../context/StoreContext";
 
 const Navbar = ({ setShowLogin }) => {
   const [menu, setMenu] = useState("home");
+  const [mobileOpen, setMobileOpen] = useState(false);
   const { getTotalCartAmount, token, setToken } = useContext(StoreContext);
 
   const navigate = useNavigate();
@@ -36,7 +37,19 @@ const Navbar = ({ setShowLogin }) => {
       <Link to="/">
         <img src={assets.logo} alt="Logo" className="logo" />
       </Link>
-      <ul className="navbar-menu">
+      <button
+        className={`navbar-hamburger ${mobileOpen ? "open" : ""}`}
+        onClick={() => setMobileOpen((o) => !o)}
+        aria-label="Menu"
+      >
+        <span />
+        <span />
+        <span />
+      </button>
+      <ul
+        className={`navbar-menu ${mobileOpen ? "open" : ""}`}
+        onClick={() => setMobileOpen(false)}
+      >
         <Link
           to="/"
           onClick={() => setMenu("home")}

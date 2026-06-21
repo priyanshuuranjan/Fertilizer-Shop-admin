@@ -44,10 +44,25 @@
 @media (max-width: 900px) {
   .my-orders-order {
     grid-template-columns: 1fr 2fr 1fr;
+    gap: 12px;
     row-gap: 5px;
     font-size: 12px;
   }
   .my-orders-order button {
     font-size: 10px;
+  }
+}
+
+@media (max-width: 520px) {
+  .my-orders-order {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    text-align: center;
+    justify-items: center;
+  }
+  .my-orders-order button {
+    width: 100%;
+    padding: 12px 0;
+    font-size: 13px;
   }
 }

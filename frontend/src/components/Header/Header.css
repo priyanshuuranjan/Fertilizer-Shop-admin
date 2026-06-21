@@ -49,13 +49,22 @@
 }
 
 @media (max-width: 750px) {
+  .header {
+    height: 52vw;
+    background-size: cover;
+  }
   .header-contents {
-    max-width: 65%;
+    max-width: 72%;
+    gap: 8px;
   }
   .header-contents p {
     display: none;
   }
+  .header-contents h2 {
+    font-size: 18px;
+  }
   .header-contents button {
-    padding: 2vw 4vw;
+    padding: 8px 16px;
+    font-size: 13px;
   }
 }
