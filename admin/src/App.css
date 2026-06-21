@@ -27,8 +27,53 @@ hr{
   display: flex;
 }
 
+@media (max-width: 768px) {
+  .app-content {
+    flex-direction: column;
+  }
+}
+
 .flex-col{
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+/* Smooth reveal of the panel right after a successful login */
+.admin-app-enter {
+  animation: panelReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes panelReveal {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.navbar-right-admin {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Logout button in the navbar */
+.admin-logout {
+  border: 1px solid #e0533f;
+  background: transparent;
+  color: #e0533f;
+  padding: 8px 18px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.admin-logout:hover {
+  background: #e0533f;
+  color: #fff;
 }
