@@ -1,0 +1,191 @@
+.advisor {
+  margin-top: 100px;
+  margin-bottom: 60px;
+  max-width: 1000px;
+}
+
+.advisor-head h1 {
+  margin: 0 0 8px;
+}
+
+.advisor-head p {
+  color: #555;
+  max-width: 640px;
+}
+
+.advisor-form {
+  margin-top: 25px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 18px;
+  background-color: #f4faf5;
+  border: 1px solid #d9ecdc;
+  border-radius: 10px;
+  padding: 22px;
+}
+
+.advisor-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.advisor-field label {
+  font-size: 14px;
+  color: #333;
+  font-weight: 600;
+}
+
+.advisor-field select,
+.advisor-field input {
+  padding: 11px;
+  border: 1px solid #c5c5c5;
+  border-radius: 6px;
+  font-size: 15px;
+  min-width: 200px;
+  outline: none;
+}
+
+.advisor-calc-btn {
+  border: none;
+  background-color: #1a7431;
+  color: #fff;
+  padding: 12px 28px;
+  border-radius: 6px;
+  font-size: 15px;
+  cursor: pointer;
+  height: fit-content;
+}
+
+.advisor-result {
+  margin-top: 35px;
+}
+
+.advisor-result h2 {
+  font-size: 20px;
+  margin-bottom: 18px;
+}
+
+.advisor-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px;
+}
+
+.advisor-card {
+  border: 1px solid #e2e2e2;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.advisor-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.advisor-card-top h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.advisor-need {
+  background-color: #eef6ef;
+  color: #1a7431;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+.advisor-product {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.advisor-product img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.advisor-pname {
+  font-weight: 600;
+  font-size: 14px;
+  margin: 0;
+}
+
+.advisor-psize {
+  color: #777;
+  font-size: 13px;
+  margin: 2px 0 0;
+}
+
+.advisor-qty {
+  font-size: 14px;
+  margin: 0;
+}
+
+.advisor-card button {
+  border: none;
+  background-color: tomato;
+  color: #fff;
+  padding: 9px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.advisor-note {
+  color: #999;
+  font-size: 13px;
+  font-style: italic;
+  margin: 0;
+}
+
+.advisor-total {
+  margin-top: 22px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.advisor-total p {
+  font-size: 17px;
+}
+
+.advisor-total button {
+  border: none;
+  background-color: #1a7431;
+  color: #fff;
+  padding: 12px 28px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.advisor-disclaimer {
+  margin-top: 25px;
+  color: #888;
+  font-size: 13px;
+  background-color: #fbfbf3;
+  border-left: 3px solid #e0c84a;
+  padding: 10px 14px;
+  border-radius: 4px;
+}
+
+@media (max-width: 600px) {
+  .advisor-field select,
+  .advisor-field input {
+    min-width: 100%;
+  }
+  .advisor-field {
+    width: 100%;
+  }
+}
