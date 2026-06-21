@@ -3,9 +3,13 @@
 *{
   padding: 0;
   margin: 0;
-  box-sizing: 0;
+  box-sizing: border-box;
   font-family: Outfit;
   scroll-behavior: smooth;
+}
+
+html, body {
+  overflow-x: hidden;
 }
 
 body{
@@ -21,6 +25,12 @@ a{
 .app{
   width: 80%;
   margin: auto;
+}
+
+@media (max-width: 750px) {
+  .app {
+    width: 92%;
+  }
 }
 
 @keyframes fadeIn {
