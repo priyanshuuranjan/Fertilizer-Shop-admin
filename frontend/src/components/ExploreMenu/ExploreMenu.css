@@ -65,17 +65,33 @@
 }
 @media (max-width: 768px) {
   .explore-menu-list {
-    flex-wrap: wrap; 
-    gap: 20px; 
+    flex-wrap: wrap;
+    gap: 20px;
   }
 
   .explore-menu-list-item img {
-    width: 18vw; 
-    height: 120px; 
+    width: 18vw;
+    height: 120px;
   }
 
   .explore-menu-list-item p {
-    font-size: 20px; 
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .explore-menu-list {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: 16px;
+  }
+  .explore-menu-list-item img {
+    width: 80px;
+    min-width: 80px;
+    height: 80px;
+  }
+  .explore-menu-list-item p {
+    font-size: 14px;
   }
 }
 

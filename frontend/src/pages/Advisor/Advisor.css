@@ -647,3 +647,36 @@
     width: 100%;
   }
 }
+
+@media (max-width: 480px) {
+  .advisor {
+    margin-top: 80px;
+  }
+  .greet-title {
+    font-size: 23px;
+  }
+  .section-head {
+    padding: 16px 16px;
+    gap: 10px;
+  }
+  .section-icon {
+    font-size: 30px;
+  }
+  .section-head h1 {
+    font-size: 19px;
+  }
+  .advisor-cards {
+    grid-template-columns: 1fr;
+  }
+  .spray-stat {
+    min-width: 100%;
+  }
+  .advisor-total {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+  .advisor-total button {
+    width: 100%;
+  }
+}

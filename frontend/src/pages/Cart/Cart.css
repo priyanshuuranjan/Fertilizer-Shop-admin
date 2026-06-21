@@ -125,3 +125,37 @@
     justify-content: start;
   }
 }
+
+@media (max-width: 600px) {
+  /* keep all columns readable by scrolling instead of squashing */
+  .cart-items {
+    overflow-x: auto;
+  }
+  .cart-items-title {
+    min-width: 460px;
+  }
+  .cart-items-item img {
+    width: 40px;
+  }
+  .cart-total button {
+    width: 100%;
+  }
+  .cart-promocode-input {
+    flex-wrap: wrap;
+    gap: 8px;
+    background: transparent;
+  }
+  .cart-promocode-input input {
+    width: 100%;
+    background: #eaeaea;
+    padding: 12px 10px;
+    border-radius: 4px;
+  }
+  .cart-promocode-input button {
+    width: 100%;
+  }
+  .cart-promocode-applied {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+}
