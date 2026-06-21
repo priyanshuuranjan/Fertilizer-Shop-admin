@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import "./Navbar.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { assets } from "../../assets/assets";
 import { StoreContext } from "../../context/StoreContext";
 
@@ -10,11 +10,25 @@ const Navbar = ({ setShowLogin }) => {
   const { getTotalCartAmount, token, setToken } = useContext(StoreContext);
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const logout = () => {
     localStorage.removeItem("token");
     setToken("");
     navigate("/");
+  };
+
+  // Scroll to an in-page section. If we're not on the page that has it,
+  // route there first (via React Router) and then scroll once it renders.
+  const scrollToSection = (id, onHomeOnly = false) => {
+    const doScroll = () =>
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    if (onHomeOnly && location.pathname !== "/") {
+      navigate("/");
+      setTimeout(doScroll, 100);
+    } else {
+      doScroll();
+    }
   };
 
   return (
@@ -31,9 +45,12 @@ const Navbar = ({ setShowLogin }) => {
           Home
         </Link>
         <a
-          href="#explore-menu"
-          onClick={() => setMenu("menu")}
+          onClick={() => {
+            setMenu("menu");
+            scrollToSection("explore-menu", true);
+          }}
           className={menu === "menu" ? "active" : ""}
+          style={{ cursor: "pointer" }}
         >
           Menu
         </a>
@@ -44,10 +61,20 @@ const Navbar = ({ setShowLogin }) => {
         >
           Order
         </Link>
+        <Link
+          to="/advisor"
+          onClick={() => setMenu("advisor")}
+          className={menu === "advisor" ? "active" : ""}
+        >
+          Crop Advisor
+        </Link>
         <a
-          href="#footer"
-          onClick={() => setMenu("contact-us")}
+          onClick={() => {
+            setMenu("contact-us");
+            scrollToSection("footer");
+          }}
           className={menu === "contact-us" ? "active" : ""}
+          style={{ cursor: "pointer" }}
         >
           Contact Us
         </a>
