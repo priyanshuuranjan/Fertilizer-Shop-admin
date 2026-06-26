@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import {
@@ -10,19 +10,52 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
+import Spinner from "../../components/Spinner/Spinner";
 import "./Dashboard.css";
 
-const StatCard = ({ label, value, icon, accent }) => (
-  <div className="stat-card" style={{ borderTop: `3px solid ${accent}` }}>
-    <div className="stat-card-icon" style={{ color: accent }}>
-      {icon}
+// Smoothly counts a number up from 0 to `target` over `duration` ms.
+const useCountUp = (target, duration = 900) => {
+  const [value, setValue] = useState(0);
+  const rafRef = useRef();
+
+  useEffect(() => {
+    const numeric = Number(target) || 0;
+    let start;
+    const step = (ts) => {
+      if (start === undefined) start = ts;
+      const progress = Math.min((ts - start) / duration, 1);
+      // ease-out cubic for a snappy finish
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setValue(Math.round(numeric * eased));
+      if (progress < 1) rafRef.current = requestAnimationFrame(step);
+    };
+    rafRef.current = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [target, duration]);
+
+  return value;
+};
+
+const StatCard = ({ label, rawValue, format, icon, accent, index }) => {
+  const animated = useCountUp(rawValue);
+  return (
+    <div
+      className="stat-card animate-up"
+      style={{
+        borderTop: `3px solid ${accent}`,
+        animationDelay: `${index * 0.08}s`,
+      }}
+    >
+      <div className="stat-card-icon" style={{ color: accent }}>
+        {icon}
+      </div>
+      <div>
+        <p className="stat-label">{label}</p>
+        <p className="stat-value">{format ? format(animated) : animated}</p>
+      </div>
     </div>
-    <div>
-      <p className="stat-label">{label}</p>
-      <p className="stat-value">{value}</p>
-    </div>
-  </div>
-);
+  );
+};
 
 const Dashboard = ({ url }) => {
   const [stats, setStats] = useState(null);
@@ -56,18 +89,19 @@ const Dashboard = ({ url }) => {
             <div key={i} className="stat-card skeleton-card" />
           ))}
         </div>
+        <Spinner label="Loading dashboard..." />
       </div>
     );
   }
 
-  const fmt = (n) =>
+  const fmtMoney = (n) =>
     n >= 1000 ? `₹${(n / 1000).toFixed(1)}k` : `₹${n}`;
 
   const cards = [
-    { label: "Total Revenue", value: fmt(stats.totalRevenue), icon: "₹", accent: "#22c55e" },
-    { label: "Total Orders", value: stats.totalOrders, icon: "📦", accent: "#3b82f6" },
-    { label: "Products", value: stats.totalProducts, icon: "🌱", accent: "#f59e0b" },
-    { label: "Customers", value: stats.totalUsers, icon: "👤", accent: "#ec4899" },
+    { label: "Total Revenue", rawValue: stats.totalRevenue, format: fmtMoney, icon: "₹", accent: "#22c55e" },
+    { label: "Total Orders", rawValue: stats.totalOrders, icon: "📦", accent: "#3b82f6" },
+    { label: "Products", rawValue: stats.totalProducts, icon: "🌱", accent: "#f59e0b" },
+    { label: "Customers", rawValue: stats.totalUsers, icon: "👤", accent: "#ec4899" },
   ];
 
   const CustomTooltip = ({ active, payload, label }) => {
@@ -87,8 +121,8 @@ const Dashboard = ({ url }) => {
       <h2 className="dash-title">Dashboard</h2>
 
       <div className="stats-grid">
-        {cards.map((c) => (
-          <StatCard key={c.label} {...c} />
+        {cards.map((c, i) => (
+          <StatCard key={c.label} index={i} {...c} />
         ))}
       </div>
 
