@@ -4,6 +4,7 @@ import { useContext } from "react";
 import { StoreContext } from "../../context/StoreContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { Spinner } from "../../components/Loader/Loader";
 
 const PlaceOrder = () => {
   const {
@@ -30,6 +31,8 @@ const PlaceOrder = () => {
     phone: "",
   });
 
+  const [placing, setPlacing] = useState(false);
+
   const onChangeHandler = (event) => {
     const name = event.target.name;
     const value = event.target.value;
@@ -38,6 +41,7 @@ const PlaceOrder = () => {
 
   const placeOrder = async (event) => {
     event.preventDefault();
+    setPlacing(true);
     let orderItems = [];
     product_list.map((item) => {
       if (cartItems[item._id] > 0) {
@@ -52,15 +56,21 @@ const PlaceOrder = () => {
       amount: getTotalCartAmount() + deliveryFee - getDiscount(),
       promoCode: appliedPromo ? appliedPromo.code : "",
     };
-    let response = await axios.post(url + "/api/order/place", orderData, {
-      headers: { token },
-    });
-    if (response.data.success) {
-      const { session_url } = response.data;
-      removePromoCode();
-      window.location.replace(session_url);
-    } else {
-      alert("Error");
+    try {
+      let response = await axios.post(url + "/api/order/place", orderData, {
+        headers: { token },
+      });
+      if (response.data.success) {
+        const { session_url } = response.data;
+        removePromoCode();
+        window.location.replace(session_url);
+      } else {
+        alert(response.data.message || "Error placing order");
+        setPlacing(false);
+      }
+    } catch {
+      alert("Something went wrong. Please try again.");
+      setPlacing(false);
     }
   };
 
@@ -193,7 +203,15 @@ const PlaceOrder = () => {
               </b>
             </div>
           </div>
-          <button type="submit">PROCEED TO PAYMENT</button>
+          <button type="submit" disabled={placing} className={placing ? "btn-placing" : ""}>
+            {placing ? (
+              <>
+                <Spinner size={18} /> Processing...
+              </>
+            ) : (
+              "PROCEED TO PAYMENT"
+            )}
+          </button>
         </div>
       </div>
     </form>

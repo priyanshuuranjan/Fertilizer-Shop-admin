@@ -1,16 +1,39 @@
 .product-item {
+  position: relative;
   width: 100%;
   margin: auto;
   border-radius: 15px;
   box-shadow: 0px 0px 10px #00000015;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.18s ease-out, box-shadow 0.3s ease;
   animation: fadeInUp 0.6s ease both;
-  overflow: hidden;
+  transform-style: preserve-3d;
+  will-change: transform;
+  background: #fff;
 }
 
 .product-item:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.16);
+  box-shadow: 0 22px 45px rgba(0, 0, 0, 0.22);
+  z-index: 2;
+}
+
+/* Cursor-following glow overlay for a glossy, premium feel */
+.product-item-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 15px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: radial-gradient(
+    320px circle at var(--glow-x, 50%) var(--glow-y, 50%),
+    rgba(46, 158, 79, 0.18),
+    transparent 60%
+  );
+  z-index: 3;
+}
+
+.product-item:hover .product-item-glow {
+  opacity: 1;
 }
 
 .product-item-img-container {
