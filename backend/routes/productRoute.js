@@ -3,6 +3,7 @@ import {
   addProduct,
   listProduct,
   searchProducts,
+  updateStock,
   removeProduct,
   bulkRemoveProducts,
 } from "../controllers/productController.js";
@@ -28,6 +29,7 @@ productRouter.post("/add", upload.single("image"), productRules, validate, addPr
 productRouter.get("/list", listProduct);
 productRouter.get("/search", searchProducts);
 productRouter.post("/remove", removeProduct);
+productRouter.post("/update-stock", updateStock);
 productRouter.post("/bulk-remove", bulkRemoveProducts);
 
 export default productRouter;

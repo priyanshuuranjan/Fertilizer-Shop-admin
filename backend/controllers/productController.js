@@ -95,6 +95,31 @@ const searchProducts = async (req, res) => {
   }
 };
 
+// Update a single product's stock (admin restock / correction).
+const updateStock = async (req, res) => {
+  try {
+    const { id, stock } = req.body;
+    const qty = Number(stock);
+    if (!id || !Number.isFinite(qty) || qty < 0) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Valid id and stock (>= 0) required" });
+    }
+    const product = await productModel.findByIdAndUpdate(
+      id,
+      { stock: Math.floor(qty) },
+      { new: true }
+    );
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+    await cacheDel(PRODUCT_LIST_KEY);
+    res.json({ success: true, message: "Stock updated", stock: product.stock });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 const removeProduct = async (req, res) => {
   try {
     const { id } = req.body;
@@ -137,6 +162,7 @@ export {
   addProduct,
   listProduct,
   searchProducts,
+  updateStock,
   removeProduct,
   bulkRemoveProducts,
 };
