@@ -26,21 +26,26 @@ const StatCard = ({ label, value, icon, accent }) => (
 
 const Dashboard = ({ url }) => {
   const [stats, setStats] = useState(null);
+  const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchAll = async () => {
       try {
-        const res = await axios.get(`${url}/api/dashboard/stats`);
-        if (res.data.success) setStats(res.data.data);
+        const [statsRes, analyticsRes] = await Promise.all([
+          axios.get(`${url}/api/dashboard/stats`),
+          axios.get(`${url}/api/dashboard/analytics`),
+        ]);
+        if (statsRes.data.success) setStats(statsRes.data.data);
         else toast.error("Failed to load dashboard");
+        if (analyticsRes.data.success) setAnalytics(analyticsRes.data.data);
       } catch {
         toast.error("Server error");
       } finally {
         setLoading(false);
       }
     };
-    fetchStats();
+    fetchAll();
   }, [url]);
 
   if (loading) {
@@ -101,6 +106,58 @@ const Dashboard = ({ url }) => {
           </ResponsiveContainer>
         </div>
       </div>
+
+      {analytics && (
+        <div className="analytics-row">
+          <div className="recent-section analytics-card">
+            <h3 className="section-title">🏆 Best Sellers</h3>
+            {analytics.bestSellers.length === 0 ? (
+              <p className="analytics-empty">No sales yet</p>
+            ) : (
+              <div className="bestseller-list">
+                {analytics.bestSellers.map((p, i) => (
+                  <div key={p.name} className="bestseller-row">
+                    <span className="bestseller-rank">{i + 1}</span>
+                    <span className="bestseller-name">{p.name}</span>
+                    <span className="bestseller-units">{p.unitsSold} sold</span>
+                    <span className="bestseller-rev">₹{p.revenue}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="recent-section analytics-card">
+            <h3 className="section-title">📊 Revenue by Category</h3>
+            {analytics.revenueByCategory.length === 0 ? (
+              <p className="analytics-empty">No sales yet</p>
+            ) : (
+              <div className="category-list">
+                {(() => {
+                  const max = Math.max(
+                    ...analytics.revenueByCategory.map((c) => c.revenue),
+                    1
+                  );
+                  return analytics.revenueByCategory.map((c) => (
+                    <div key={c.category} className="category-row">
+                      <div className="category-label">
+                        <span>{c.category}</span>
+                        <span className="category-rev">₹{c.revenue}</span>
+                      </div>
+                      <div className="category-bar-track">
+                        <div
+                          className="category-bar-fill"
+                          style={{ width: `${(c.revenue / max) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                  ));
+                })()}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {stats.lowStockProducts && stats.lowStockProducts.length > 0 && (
         <div className="recent-section low-stock-section">

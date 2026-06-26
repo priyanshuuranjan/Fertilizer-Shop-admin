@@ -77,4 +77,77 @@ const getDashboardStats = async (req, res) => {
   }
 };
 
-export { getDashboardStats };
+// Deeper analytics powered by MongoDB aggregation:
+//   - best-selling products (by units sold)
+//   - revenue split by category
+//   - monthly revenue trend (last 6 months)
+const getSalesAnalytics = async (req, res) => {
+  try {
+    const [bestSellers, revenueByCategory, monthlyTrendRaw] = await Promise.all([
+      orderModel.aggregate([
+        { $match: { payment: true } },
+        { $unwind: "$items" },
+        {
+          $group: {
+            _id: "$items.name",
+            unitsSold: { $sum: "$items.quantity" },
+            revenue: {
+              $sum: { $multiply: ["$items.price", "$items.quantity"] },
+            },
+          },
+        },
+        { $sort: { unitsSold: -1 } },
+        { $limit: 5 },
+        { $project: { _id: 0, name: "$_id", unitsSold: 1, revenue: 1 } },
+      ]),
+      orderModel.aggregate([
+        { $match: { payment: true } },
+        { $unwind: "$items" },
+        {
+          $group: {
+            _id: "$items.category",
+            revenue: {
+              $sum: { $multiply: ["$items.price", "$items.quantity"] },
+            },
+          },
+        },
+        { $sort: { revenue: -1 } },
+        { $project: { _id: 0, category: { $ifNull: ["$_id", "Other"] }, revenue: 1 } },
+      ]),
+      orderModel.aggregate([
+        { $match: { payment: true } },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$date" },
+              month: { $month: "$date" },
+            },
+            revenue: { $sum: "$amount" },
+            orders: { $sum: 1 },
+          },
+        },
+        { $sort: { "_id.year": 1, "_id.month": 1 } },
+        { $limit: 6 },
+      ]),
+    ]);
+
+    const monthNames = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+    ];
+    const monthlyTrend = monthlyTrendRaw.map((m) => ({
+      month: `${monthNames[m._id.month - 1]} ${String(m._id.year).slice(2)}`,
+      revenue: m.revenue,
+      orders: m.orders,
+    }));
+
+    res.json({
+      success: true,
+      data: { bestSellers, revenueByCategory, monthlyTrend },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export { getDashboardStats, getSalesAnalytics };
