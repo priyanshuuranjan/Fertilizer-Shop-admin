@@ -56,6 +56,38 @@
   border-radius: 5px;
   cursor: pointer;
 }
+.notif-btn {
+  position: relative;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 7px 9px;
+  cursor: pointer;
+  color: var(--light-text);
+  display: flex;
+  align-items: center;
+  transition: background 0.2s;
+}
+
+.notif-btn:hover {
+  background: var(--sidebar);
+}
+
+.notif-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: tomato;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 20px;
+  padding: 1px 5px;
+  min-width: 18px;
+  text-align: center;
+  line-height: 1.4;
+}
+
 /* checkbox */
 #visual-toggle {
   appearance: none;
