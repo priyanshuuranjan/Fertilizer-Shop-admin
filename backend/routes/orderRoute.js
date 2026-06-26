@@ -9,6 +9,7 @@ import {
   exportOrders,
 } from "../controllers/orderController.js";
 import { validate, placeOrderRules } from "../middleware/validate.js";
+import { downloadInvoice } from "../controllers/invoiceController.js";
 
 const orderRouter = express.Router();
 
@@ -18,5 +19,6 @@ orderRouter.post("/userorders", authMiddleware, userOrders);
 orderRouter.get("/list", listOrders);
 orderRouter.post("/status", updateStatus);
 orderRouter.get("/export", exportOrders);
+orderRouter.get("/invoice/:orderId", downloadInvoice);
 
 export default orderRouter;

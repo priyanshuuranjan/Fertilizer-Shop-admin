@@ -61,7 +61,19 @@ const MyOrders = () => {
               <p>
                 <span>&#x25cf;</span> <b>{order.status}</b>
               </p>
-              <button onClick={fetchOrders}>Track Order</button>
+              <div className="my-orders-actions">
+                <button onClick={fetchOrders}>Track Order</button>
+                {order.payment && (
+                  <a
+                    className="invoice-btn"
+                    href={`${url}/api/order/invoice/${order._id}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Invoice
+                  </a>
+                )}
+              </div>
             </div>
           );
           })
