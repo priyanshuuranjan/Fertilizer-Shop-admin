@@ -9,6 +9,41 @@ const List = ({ url }) => {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(new Set());
   const [bulkLoading, setBulkLoading] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [editValue, setEditValue] = useState("");
+
+  const startEdit = (item) => {
+    setEditingId(item._id);
+    setEditValue(String(item.stock ?? 0));
+  };
+
+  const saveStock = async (productId) => {
+    const qty = Number(editValue);
+    if (!Number.isFinite(qty) || qty < 0) {
+      toast.error("Enter a valid stock number");
+      return;
+    }
+    try {
+      const res = await axios.post(`${url}/api/product/update-stock`, {
+        id: productId,
+        stock: qty,
+      });
+      if (res.data.success) {
+        setList((prev) =>
+          prev.map((p) =>
+            p._id === productId ? { ...p, stock: res.data.stock } : p
+          )
+        );
+        toast.success("Stock updated");
+      } else {
+        toast.error(res.data.message || "Update failed");
+      }
+    } catch {
+      toast.error("Server error");
+    } finally {
+      setEditingId(null);
+    }
+  };
 
   const fetchList = async () => {
     setLoading(true);
@@ -128,17 +163,38 @@ const List = ({ url }) => {
                 <p>{item.size}</p>
                 <p>₹{item.price}</p>
                 <p>
-                  <span
-                    className={`stock-badge ${
-                      (item.stock ?? 0) === 0
-                        ? "out"
-                        : item.stock <= 10
-                        ? "low"
-                        : "in"
-                    }`}
-                  >
-                    {(item.stock ?? 0) === 0 ? "Out" : item.stock}
-                  </span>
+                  {editingId === item._id ? (
+                    <span className="stock-edit">
+                      <input
+                        type="number"
+                        min="0"
+                        autoFocus
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") saveStock(item._id);
+                          if (e.key === "Escape") setEditingId(null);
+                        }}
+                      />
+                      <button onClick={() => saveStock(item._id)} title="Save">
+                        ✓
+                      </button>
+                    </span>
+                  ) : (
+                    <span
+                      className={`stock-badge editable ${
+                        (item.stock ?? 0) === 0
+                          ? "out"
+                          : item.stock <= 10
+                          ? "low"
+                          : "in"
+                      }`}
+                      onClick={() => startEdit(item)}
+                      title="Click to edit stock"
+                    >
+                      {(item.stock ?? 0) === 0 ? "Out" : item.stock}
+                    </span>
+                  )}
                 </p>
                 <p
                   onClick={() => removeProduct(item._id)}
