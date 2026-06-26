@@ -32,6 +32,59 @@ const listProduct = async (req, res) => {
   }
 };
 
+// Paginated, searchable, filterable product listing.
+// Query params: page, limit, q (search), category, sort, minPrice, maxPrice
+const searchProducts = async (req, res) => {
+  try {
+    const page = Math.max(parseInt(req.query.page) || 1, 1);
+    const limit = Math.min(Math.max(parseInt(req.query.limit) || 12, 1), 50);
+    const skip = (page - 1) * limit;
+
+    const filter = {};
+
+    if (req.query.q) {
+      // Case-insensitive partial match on name (regex beats $text for substrings)
+      filter.name = { $regex: String(req.query.q).trim(), $options: "i" };
+    }
+    if (req.query.category && req.query.category !== "All") {
+      filter.category = req.query.category;
+    }
+    if (req.query.minPrice || req.query.maxPrice) {
+      filter.price = {};
+      if (req.query.minPrice) filter.price.$gte = Number(req.query.minPrice);
+      if (req.query.maxPrice) filter.price.$lte = Number(req.query.maxPrice);
+    }
+
+    const sortMap = {
+      price_asc: { price: 1 },
+      price_desc: { price: -1 },
+      name_asc: { name: 1 },
+      newest: { _id: -1 },
+    };
+    const sort = sortMap[req.query.sort] || { _id: -1 };
+
+    const [products, total] = await Promise.all([
+      productModel.find(filter).sort(sort).skip(skip).limit(limit),
+      productModel.countDocuments(filter),
+    ]);
+
+    res.json({
+      success: true,
+      data: products,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit) || 1,
+        hasNext: page * limit < total,
+        hasPrev: page > 1,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 const removeProduct = async (req, res) => {
   try {
     const { id } = req.body;
@@ -68,4 +121,10 @@ const bulkRemoveProducts = async (req, res) => {
   }
 };
 
-export { addProduct, listProduct, removeProduct, bulkRemoveProducts };
+export {
+  addProduct,
+  listProduct,
+  searchProducts,
+  removeProduct,
+  bulkRemoveProducts,
+};
