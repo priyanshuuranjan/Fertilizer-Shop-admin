@@ -41,6 +41,29 @@
   color: #454545;
 }
 
+.my-orders-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.invoice-btn {
+  text-align: center;
+  border: 1px solid #1a7431;
+  padding: 11px 0;
+  border-radius: 4px;
+  background-color: #e6f4ea;
+  color: #1a7431;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+
+.invoice-btn:hover {
+  background-color: #d2ead9;
+}
+
 @media (max-width: 900px) {
   .my-orders-order {
     grid-template-columns: 1fr 2fr 1fr;
