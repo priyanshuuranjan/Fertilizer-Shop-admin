@@ -32,6 +32,20 @@
 }
 .place-order .cart-total button {
   margin-top: 30px;
+  transition: transform 0.15s ease, opacity 0.2s ease;
+}
+
+.place-order .cart-total button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.place-order .cart-total button.btn-placing {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  opacity: 0.85;
+  cursor: progress;
 }
 @media (max-width: 768px) {
   .place-order {

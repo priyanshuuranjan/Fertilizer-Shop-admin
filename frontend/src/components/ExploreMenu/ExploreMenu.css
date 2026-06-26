@@ -33,9 +33,23 @@
   min-width: 130px;
   cursor: pointer;
   border-radius: 50%;
-  transition: 0.2s;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.3s ease, border 0.2s ease;
   height: 140px;
   object-fit: cover;
+}
+
+.explore-menu-list-item:hover img {
+  transform: translateY(-8px) scale(1.08) rotate(-2deg);
+  box-shadow: 0 16px 28px rgba(26, 116, 49, 0.28);
+}
+
+.explore-menu-list-item:hover p {
+  color: #1a7431;
+}
+
+.explore-menu-list-item p {
+  transition: color 0.2s ease;
 }
 
 .explore-menu-list-item p {
