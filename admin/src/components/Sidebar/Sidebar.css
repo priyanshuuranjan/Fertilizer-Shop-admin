@@ -21,6 +21,11 @@
   padding: 8px 10px;
   border-radius: 3px 0px 0px 3px;
   cursor: pointer;
+  transition: background 0.15s;
+}
+
+.sidebar-svg {
+  flex-shrink: 0;
 }
 
 .sidebar-option.active {
