@@ -2,6 +2,7 @@ import express from "express";
 import {
   addProduct,
   listProduct,
+  searchProducts,
   removeProduct,
   bulkRemoveProducts,
 } from "../controllers/productController.js";
@@ -25,6 +26,7 @@ const productRouter = express.Router();
 // Route to handle product upload (All routes are related to productController)
 productRouter.post("/add", upload.single("image"), productRules, validate, addProduct);
 productRouter.get("/list", listProduct);
+productRouter.get("/search", searchProducts);
 productRouter.post("/remove", removeProduct);
 productRouter.post("/bulk-remove", bulkRemoveProducts);
 

@@ -10,6 +10,11 @@ const productSchema = new mongoose.Schema({
   stock: { type: Number, default: 0 },
 });
 
+// Indexes to keep search/filter/sort fast as the catalogue grows.
+productSchema.index({ name: "text", description: "text" });
+productSchema.index({ category: 1 });
+productSchema.index({ price: 1 });
+
 // agr model phle se bna hoga to bar bar nhi banega or nhi bna rhga to bn jayega
 const productModel =
   mongoose.models.product || mongoose.model("product", productSchema);
