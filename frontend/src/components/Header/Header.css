@@ -33,13 +33,22 @@
 
 .header-contents button {
   border: none;
-  color: #747474;
-  font-weight: 500;
+  color: #1a7431;
+  font-weight: 600;
   padding: 1vw 2.3vw;
   background-color: white;
   font-size: max(1vw, 13px);
   border-radius: 50px;
   cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.header-contents button:hover {
+  transform: translateY(-3px) scale(1.03);
+  background-color: #1a7431;
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(26, 116, 49, 0.4);
 }
 
 @media (max-width: 1050px) {
