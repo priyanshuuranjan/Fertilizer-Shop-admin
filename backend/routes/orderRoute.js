@@ -8,10 +8,11 @@ import {
   updateStatus,
   exportOrders,
 } from "../controllers/orderController.js";
+import { validate, placeOrderRules } from "../middleware/validate.js";
 
 const orderRouter = express.Router();
 
-orderRouter.post("/place", authMiddleware, placeOrder);
+orderRouter.post("/place", authMiddleware, placeOrderRules, validate, placeOrder);
 orderRouter.post("/verify", verifyOrder);
 orderRouter.post("/userorders", authMiddleware, userOrders);
 orderRouter.get("/list", listOrders);
