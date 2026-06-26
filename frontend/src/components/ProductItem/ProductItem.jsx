@@ -3,19 +3,22 @@ import "./ProductItem.css";
 import { assets } from "../../assets/assets";
 import { StoreContext } from "../../context/StoreContext";
 
-const ProductItem = ({ id, name, price, description, image, size }) => {
+const ProductItem = ({ id, name, price, description, image, size, stock }) => {
   const { cartItems, addToCart, removeFromCart, url } =
     useContext(StoreContext);
 
+  const outOfStock = stock !== undefined && stock <= 0;
+
   return (
-    <div className="product-item">
+    <div className={`product-item ${outOfStock ? "product-item-oos" : ""}`}>
       <div className="product-item-img-container">
         <img
           className="product-item-image"
           src={url + "/images/" + image}
           alt=""
         />
-        {!cartItems[id] ? (
+        {outOfStock && <span className="oos-badge">Out of Stock</span>}
+        {outOfStock ? null : !cartItems[id] ? (
           <img
             className="add"
             onClick={() => addToCart(id)}
