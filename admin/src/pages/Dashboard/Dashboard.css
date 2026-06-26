@@ -9,7 +9,34 @@
   font-weight: 700;
   color: var(--light-text);
   margin-bottom: 24px;
+  animation: fade-up 0.5s ease both;
 }
+
+/* Shared entrance animation: fade + slide up */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-up {
+  animation: fade-up 0.55s ease both;
+}
+
+.chart-section,
+.analytics-row,
+.recent-section {
+  animation: fade-up 0.6s ease both;
+}
+
+.chart-section { animation-delay: 0.15s; }
+.analytics-row { animation-delay: 0.22s; }
+.recent-section { animation-delay: 0.3s; }
 
 .stats-grid {
   display: grid;
@@ -41,11 +68,12 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  transition: box-shadow 0.2s;
+  transition: box-shadow 0.2s, transform 0.2s;
 }
 
 .stat-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+  transform: translateY(-4px);
 }
 
 .stat-card-icon {

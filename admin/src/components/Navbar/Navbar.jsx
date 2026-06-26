@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import "./Navbar.css";
-import { assets } from "../../assets/assets.js";
 
 let socket = null;
 
@@ -79,7 +78,6 @@ const Navbar = ({ onLogout }) => {
             )}
           </button>
 
-          <img className="profile" src={assets.profile_image} alt="" />
           {onLogout && (
             <button className="admin-logout" onClick={onLogout}>
               Logout
