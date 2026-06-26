@@ -102,6 +102,32 @@ const Dashboard = ({ url }) => {
         </div>
       </div>
 
+      {stats.lowStockProducts && stats.lowStockProducts.length > 0 && (
+        <div className="recent-section low-stock-section">
+          <h3 className="section-title">
+            ⚠️ Low Stock Alert
+            <span className="low-stock-count">
+              {stats.lowStockProducts.length}
+            </span>
+          </h3>
+          <div className="low-stock-grid">
+            {stats.lowStockProducts.map((p) => (
+              <div key={p._id} className="low-stock-item">
+                <div>
+                  <p className="low-stock-name">{p.name}</p>
+                  <p className="low-stock-cat">{p.category}</p>
+                </div>
+                <span
+                  className={`stock-pill ${p.stock === 0 ? "out" : "low"}`}
+                >
+                  {p.stock === 0 ? "Out of stock" : `${p.stock} left`}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="recent-section">
         <h3 className="section-title">Recent Orders</h3>
         <div className="recent-table">

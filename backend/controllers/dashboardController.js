@@ -4,18 +4,30 @@ import userModel from "../models/userModel.js";
 
 const getDashboardStats = async (req, res) => {
   try {
-    const [totalOrders, totalProducts, totalUsers, paidOrders, recentOrders] =
-      await Promise.all([
-        orderModel.countDocuments({}),
-        productModel.countDocuments({}),
-        userModel.countDocuments({}),
-        orderModel.find({ payment: true }).select("amount date"),
-        orderModel
-          .find({})
-          .sort({ date: -1 })
-          .limit(5)
-          .select("amount status date address items"),
-      ]);
+    const LOW_STOCK_THRESHOLD = 10;
+    const [
+      totalOrders,
+      totalProducts,
+      totalUsers,
+      paidOrders,
+      recentOrders,
+      lowStockProducts,
+    ] = await Promise.all([
+      orderModel.countDocuments({}),
+      productModel.countDocuments({}),
+      userModel.countDocuments({}),
+      orderModel.find({ payment: true }).select("amount date"),
+      orderModel
+        .find({})
+        .sort({ date: -1 })
+        .limit(5)
+        .select("amount status date address items"),
+      productModel
+        .find({ stock: { $lte: LOW_STOCK_THRESHOLD } })
+        .sort({ stock: 1 })
+        .limit(8)
+        .select("name stock category"),
+    ]);
 
     const totalRevenue = paidOrders.reduce((sum, o) => sum + o.amount, 0);
 
@@ -57,6 +69,7 @@ const getDashboardStats = async (req, res) => {
         totalRevenue,
         chartData,
         recentOrders,
+        lowStockProducts,
       },
     });
   } catch (error) {

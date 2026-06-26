@@ -105,6 +105,7 @@ const List = ({ url }) => {
           <b>Category</b>
           <b>Size</b>
           <b>Price</b>
+          <b>Stock</b>
           <b>Action</b>
         </div>
 
@@ -126,6 +127,19 @@ const List = ({ url }) => {
                 <p>{item.category}</p>
                 <p>{item.size}</p>
                 <p>₹{item.price}</p>
+                <p>
+                  <span
+                    className={`stock-badge ${
+                      (item.stock ?? 0) === 0
+                        ? "out"
+                        : item.stock <= 10
+                        ? "low"
+                        : "in"
+                    }`}
+                  >
+                    {(item.stock ?? 0) === 0 ? "Out" : item.stock}
+                  </span>
+                </p>
                 <p
                   onClick={() => removeProduct(item._id)}
                   className="cursor remove-btn"
