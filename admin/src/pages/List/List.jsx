@@ -18,9 +18,10 @@ const List = ({ url }) => {
   };
 
   const saveStock = async (productId) => {
-    const qty = Number(editValue);
-    if (!Number.isFinite(qty) || qty < 0) {
-      toast.error("Enter a valid stock number");
+    const trimmed = String(editValue).trim();
+    const qty = Number(trimmed);
+    if (trimmed === "" || !Number.isFinite(qty) || qty < 0) {
+      toast.error("Enter a valid stock number (0 or more)");
       return;
     }
     try {
@@ -34,14 +35,22 @@ const List = ({ url }) => {
             p._id === productId ? { ...p, stock: res.data.stock } : p
           )
         );
+        setEditingId(null);
         toast.success("Stock updated");
       } else {
         toast.error(res.data.message || "Update failed");
       }
-    } catch {
-      toast.error("Server error");
-    } finally {
-      setEditingId(null);
+    } catch (err) {
+      // Surface the real reason instead of a generic message — a 404 here
+      // usually means the backend serving this panel doesn't have the route yet.
+      if (err.response?.status === 404) {
+        toast.error("Endpoint not found — restart/redeploy the backend");
+      } else {
+        toast.error(
+          err.response?.data?.message ||
+            `Request failed${err.response ? ` (${err.response.status})` : " (no response)"}`
+        );
+      }
     }
   };
 
