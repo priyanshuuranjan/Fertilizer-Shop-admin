@@ -396,7 +396,7 @@ jobs:
           VITE_API_URL: http://localhost:8000
 ```
 
-> **Why `npm ci` and not `npm install`?**  
+> **Why `npm ci` and not `npm install`?**
 > `npm ci` installs the exact versions locked in `package-lock.json` — reproducible builds every time. `npm install` can silently upgrade minor versions and cause environment drift.
 
 ---
@@ -532,7 +532,7 @@ Base URL: `http://localhost:8000`
 
 ## ⚡ Load Balancing — PM2
 
-Node.js is single-threaded — only **1 CPU core** used by default.  
+Node.js is single-threaded — only **1 CPU core** used by default.
 PM2 cluster mode starts **one process per CPU core** → full utilisation.
 
 ```
@@ -597,8 +597,8 @@ Copy all keys from `backend/.env` into Render's **Environment** tab.
 
 Same as Admin Panel — root directory = `frontend`.
 
-> **Free tier note:** Render spins down idle services after ~15 min.  
-> First request after sleep takes ~30 s (cold start). Skeleton loaders keep the UI graceful during this wait.  
+> **Free tier note:** Render spins down idle services after ~15 min.
+> First request after sleep takes ~30 s (cold start). Skeleton loaders keep the UI graceful during this wait.
 > Use [UptimeRobot](https://uptimerobot.com) (free) to ping your API every 5 min and eliminate cold starts.
 
 ---
@@ -629,4 +629,3 @@ Licensed under the **MIT License** — see [LICENSE](LICENSE) for details.
 **Priyanshu Ranjan**
 - Email: priyanshumth0808@gmail.com
 - GitHub: [@priyanshuuranjan](https://github.com/priyanshuuranjan)
-
