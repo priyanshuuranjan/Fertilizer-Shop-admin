@@ -3,6 +3,7 @@ import userModel from "../models/userModel.js";
 import productModel from "../models/productModel.js";
 import promoModel from "../models/promoModel.js";
 import { evaluatePromo } from "./promoController.js";
+import { cacheDel } from "../config/cache.js";
 import Stripe from "stripe";
 import dotenv from "dotenv";
 
@@ -146,6 +147,7 @@ const verifyOrder = async (req, res) => {
             )
           )
         );
+        await cacheDel("products:list"); // stock changed, refresh cached list
       }
       // Burn the promo for this user only after a confirmed payment, so a
       // cancelled checkout never costs them their one-time code.
