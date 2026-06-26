@@ -7,7 +7,7 @@ on:
     branches: [master]
 
 jobs:
-  # ── Job 1: Backend syntax + dependency check ──────────────────────────────
+  # ── Job 1: Backend dependency check ───────────────────────────────────────
   build-backend:
     name: Backend Check
     runs-on: ubuntu-latest
@@ -26,10 +26,6 @@ jobs:
       - name: Install backend dependencies
         working-directory: backend
         run: npm ci
-
-      - name: Check server.js syntax
-        working-directory: backend
-        run: node --input-type=module --eval "import('./server.js')" || true
 
   # ── Job 2: Admin frontend build ───────────────────────────────────────────
   build-admin:
@@ -54,7 +50,7 @@ jobs:
       - name: Build admin panel
         working-directory: admin
         env:
-          VITE_API_URL: ${{ secrets.VITE_API_URL || 'http://localhost:8000' }}
+          VITE_API_URL: http://localhost:8000
         run: npm run build
 
       - name: Upload build artifact
@@ -68,8 +64,6 @@ jobs:
   build-frontend:
     name: Frontend Build
     runs-on: ubuntu-latest
-    # Only run if frontend folder exists
-    if: ${{ hashFiles('frontend/package.json') != '' }}
 
     steps:
       - name: Checkout code
@@ -89,5 +83,5 @@ jobs:
       - name: Build frontend
         working-directory: frontend
         env:
-          VITE_API_URL: ${{ secrets.VITE_API_URL || 'http://localhost:8000' }}
+          VITE_API_URL: http://localhost:8000
         run: npm run build
