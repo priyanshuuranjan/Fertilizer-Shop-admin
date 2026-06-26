@@ -1,5 +1,8 @@
 import productModel from "../models/productModel.js";
 import fs from "fs/promises";
+import { cacheGet, cacheSet, cacheDel } from "../config/cache.js";
+
+const PRODUCT_LIST_KEY = "products:list";
 
 const addProduct = async (req, res) => {
   try {
@@ -17,6 +20,7 @@ const addProduct = async (req, res) => {
     });
 
     await newProduct.save();
+    await cacheDel(PRODUCT_LIST_KEY); // stale list now, drop it
     res.status(201).json({ success: true, message: "Product added successfully" });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -25,7 +29,13 @@ const addProduct = async (req, res) => {
 
 const listProduct = async (req, res) => {
   try {
+    // Serve from cache when warm; otherwise hit the DB and backfill the cache.
+    const cached = await cacheGet(PRODUCT_LIST_KEY);
+    if (cached) {
+      return res.json({ success: true, data: cached, cached: true });
+    }
     const products = await productModel.find({});
+    await cacheSet(PRODUCT_LIST_KEY, products, 60); // 60s TTL
     res.json({ success: true, data: products });
   } catch (error) {
     res.json({ success: false, message: "Error" });
@@ -96,6 +106,7 @@ const removeProduct = async (req, res) => {
       await fs.unlink(`uploads/${product.image}`).catch(() => {});
     }
     await productModel.findByIdAndDelete(id);
+    await cacheDel(PRODUCT_LIST_KEY);
     res.json({ success: true, message: "Product removed" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -115,6 +126,7 @@ const bulkRemoveProducts = async (req, res) => {
       })
     );
     await productModel.deleteMany({ _id: { $in: ids } });
+    await cacheDel(PRODUCT_LIST_KEY);
     res.json({ success: true, message: `${ids.length} products removed` });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
