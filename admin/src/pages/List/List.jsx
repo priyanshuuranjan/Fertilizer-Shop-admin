@@ -7,6 +7,8 @@ import { ListRowSkeleton } from "../../components/Skeleton/Skeleton";
 const List = ({ url }) => {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState(new Set());
+  const [bulkLoading, setBulkLoading] = useState(false);
 
   const fetchList = async () => {
     setLoading(true);
@@ -14,25 +16,58 @@ const List = ({ url }) => {
       const response = await axios.get(`${url}/api/product/list`);
       if (response.data.success) {
         setList(response.data.data);
+        setSelected(new Set());
       } else {
-        toast.error("Error");
+        toast.error("Error loading products");
       }
-    } catch (error) {
-      toast.error("Error");
+    } catch {
+      toast.error("Server error");
     } finally {
       setLoading(false);
     }
   };
 
   const removeProduct = async (productId) => {
-    const response = await axios.post(`${url}/api/product/remove`, {
-      id: productId,
-    });
+    const response = await axios.post(`${url}/api/product/remove`, { id: productId });
     await fetchList();
-    if (response.data.success) {
-      toast.success(response.data.message);
+    if (response.data.success) toast.success(response.data.message);
+    else toast.error("Error");
+  };
+
+  const toggleSelect = (id) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selected.size === list.length) {
+      setSelected(new Set());
     } else {
-      toast.error("Error");
+      setSelected(new Set(list.map((p) => p._id)));
+    }
+  };
+
+  const bulkDelete = async () => {
+    if (selected.size === 0) return;
+    if (!window.confirm(`Delete ${selected.size} selected product(s)?`)) return;
+    setBulkLoading(true);
+    try {
+      const res = await axios.post(`${url}/api/product/bulk-remove`, {
+        ids: Array.from(selected),
+      });
+      if (res.data.success) {
+        toast.success(res.data.message);
+        await fetchList();
+      } else {
+        toast.error("Bulk delete failed");
+      }
+    } catch {
+      toast.error("Server error");
+    } finally {
+      setBulkLoading(false);
     }
   };
 
@@ -40,35 +75,65 @@ const List = ({ url }) => {
     fetchList();
   }, []);
 
+  const allSelected = list.length > 0 && selected.size === list.length;
+
   return (
     <div className="list add flex-col">
-      <p>All Products List</p>
+      <div className="list-header">
+        <p>All Products List</p>
+        {selected.size > 0 && (
+          <button
+            className="bulk-delete-btn"
+            onClick={bulkDelete}
+            disabled={bulkLoading}
+          >
+            {bulkLoading ? "Deleting..." : `Delete Selected (${selected.size})`}
+          </button>
+        )}
+      </div>
+
       <div className="list-table">
         <div className="list-table-format title">
+          <input
+            type="checkbox"
+            className="row-check"
+            checked={allSelected}
+            onChange={toggleSelectAll}
+          />
           <b>Image</b>
           <b>Name</b>
           <b>Category</b>
           <b>Size</b>
           <b>Price</b>
-          
           <b>Action</b>
         </div>
+
         {loading
           ? Array.from({ length: 6 }).map((_, i) => <ListRowSkeleton key={i} />)
-          : list.map((item, index) => {
-          return (
-            <div key={index} className="list-table-format">
-              <img src={`${url}/images/` + item.image} alt="" />
-              <p>{item.name}</p>
-              <p>{item.category}</p>
-              <p>{item.size}</p>
-              <p>₹{item.price}</p>
-              <p onClick={() => removeProduct(item._id)} className="cursor">
-                X
-              </p>
-            </div>
-          );
-            })}
+          : list.map((item) => (
+              <div
+                key={item._id}
+                className={`list-table-format ${selected.has(item._id) ? "row-selected" : ""}`}
+              >
+                <input
+                  type="checkbox"
+                  className="row-check"
+                  checked={selected.has(item._id)}
+                  onChange={() => toggleSelect(item._id)}
+                />
+                <img src={`${url}/images/${item.image}`} alt="" />
+                <p>{item.name}</p>
+                <p>{item.category}</p>
+                <p>{item.size}</p>
+                <p>₹{item.price}</p>
+                <p
+                  onClick={() => removeProduct(item._id)}
+                  className="cursor remove-btn"
+                >
+                  X
+                </p>
+              </div>
+            ))}
       </div>
     </div>
   );

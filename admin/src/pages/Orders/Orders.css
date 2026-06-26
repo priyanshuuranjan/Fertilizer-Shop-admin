@@ -1,3 +1,33 @@
+.orders-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.export-btn {
+  background: #16a34a;
+  color: white;
+  border: none;
+  padding: 9px 20px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.export-btn:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.export-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .order-item {
   display: grid;
   grid-template-columns: 0.5fr 2fr 1fr 1fr 1fr;
