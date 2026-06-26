@@ -48,6 +48,15 @@ const placeOrder = async (req, res) => {
     await newOrder.save();
     await userModel.findByIdAndUpdate(req.body.userId, { cartData: {} });
 
+    const io = req.app.get("io");
+    if (io) {
+      io.emit("newOrder", {
+        orderId: newOrder._id,
+        amount,
+        customerName: req.body.address?.firstName || "Customer",
+      });
+    }
+
     const line_items = req.body.items.map((item) => ({
       price_data: {
         currency: "inr",
@@ -159,4 +168,32 @@ const updateStatus = async (req, res) => {
   }
 };
 
-export { placeOrder, verifyOrder, userOrders, listOrders, updateStatus };
+const exportOrders = async (req, res) => {
+  try {
+    const orders = await orderModel.find({});
+    const header =
+      "Order ID,Customer Name,Phone,Items,Amount,Status,Payment,Date\n";
+    const rows = orders
+      .map((o) => {
+        const items = o.items
+          .map((i) => `${i.name} x${i.quantity}`)
+          .join(" | ");
+        const name = `${o.address.firstName || ""} ${o.address.lastName || ""}`.trim();
+        const date = new Date(o.date).toLocaleDateString("en-IN");
+        const phone = o.address.phone || "";
+        return `${o._id},"${name}","${phone}","${items}",${o.amount},${o.status},${o.payment ? "Yes" : "No"},${date}`;
+      })
+      .join("\n");
+
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader(
+      "Content-Disposition",
+      'attachment; filename="orders-export.csv"'
+    );
+    res.send(header + rows);
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export { placeOrder, verifyOrder, userOrders, listOrders, updateStatus, exportOrders };

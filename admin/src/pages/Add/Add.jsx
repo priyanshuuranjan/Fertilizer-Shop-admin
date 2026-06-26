@@ -14,6 +14,7 @@ const Add = ({ url }) => {
     description: "",
     price: "",
     size: "",
+    stock: "",
     category: "Fertilizer",
   });
 
@@ -31,6 +32,7 @@ const Add = ({ url }) => {
     formData.append("price", Number(data.price));
     formData.append("category", data.category);
     formData.append("size", data.size);
+    formData.append("stock", Number(data.stock) || 0);
     formData.append("image", image);
     const response = await axios.post(`${url}/api/product/add`, formData);
     if (response.data.success) {
@@ -38,7 +40,9 @@ const Add = ({ url }) => {
         name: "",
         description: "",
         price: "",
-        category: "",
+        size: "",
+        stock: "",
+        category: "Fertilizer",
       });
       setImage(false);
       toast.success(response.data.message);
@@ -132,6 +136,17 @@ const Add = ({ url }) => {
               name="price"
               placeholder="₹200"
               required
+            />
+          </div>
+          <div className="add-price flex-col">
+            <p>Stock Quantity</p>
+            <input
+              className="inputclasa"
+              onChange={onChangeHandler}
+              value={data.stock}
+              type="Number"
+              name="stock"
+              placeholder="e.g. 50"
             />
           </div>
         </div>
