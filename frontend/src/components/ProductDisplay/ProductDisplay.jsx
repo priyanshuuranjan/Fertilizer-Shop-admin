@@ -44,6 +44,7 @@ const ProductDisplay = ({ category }) => {
               price={item.price}
               image={item.image}
               size={item.size}
+              stock={item.stock}
             />
           ))}
         </div>

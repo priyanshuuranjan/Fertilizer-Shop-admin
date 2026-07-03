@@ -1,0 +1,145 @@
+/* Kept in the DOM but off-screen so nothing flashes before print() fires. */
+.print-slip {
+  position: fixed;
+  top: -9999px;
+  left: -9999px;
+  width: 700px;
+  padding: 30px;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #1a1a1a;
+  background: #fff;
+}
+
+.ps-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 2px solid #1a7431;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.ps-header h1 {
+  font-size: 20px;
+  color: #1a7431;
+  margin: 0;
+}
+
+.ps-tagline {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: #666;
+}
+
+.ps-meta {
+  text-align: right;
+  font-size: 12px;
+}
+
+.ps-meta p {
+  margin: 2px 0;
+}
+
+.ps-ship-to {
+  margin-bottom: 20px;
+  font-size: 13px;
+}
+
+.ps-label {
+  font-weight: 700;
+  color: #1a7431;
+  margin: 0 0 4px;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
+
+.ps-customer-name {
+  font-weight: 700;
+  margin: 0 0 2px;
+}
+
+.ps-ship-to p {
+  margin: 2px 0;
+}
+
+.ps-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+.ps-table th {
+  background: #1a7431;
+  color: #fff;
+  text-align: left;
+  padding: 8px 10px;
+}
+
+.ps-table th:nth-child(2),
+.ps-table th:nth-child(3),
+.ps-table th:nth-child(4) {
+  text-align: right;
+}
+
+.ps-table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.ps-table td:nth-child(2),
+.ps-table td:nth-child(3),
+.ps-table td:nth-child(4) {
+  text-align: right;
+}
+
+.ps-totals {
+  margin-left: auto;
+  width: 260px;
+  font-size: 13px;
+}
+
+.ps-totals div {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+
+.ps-grand-total {
+  border-top: 1px solid #999;
+  margin-top: 4px;
+  padding-top: 8px !important;
+  font-weight: 700;
+  font-size: 15px;
+  color: #1a7431;
+}
+
+.ps-footer {
+  margin-top: 30px;
+  text-align: center;
+  font-size: 11px;
+  color: #999;
+}
+
+@media print {
+  @page {
+    margin: 16mm;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .print-slip,
+  .print-slip * {
+    visibility: visible;
+  }
+
+  .print-slip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+}

@@ -1,7 +1,9 @@
 import orderModel from "../models/orderModel.js";
 import userModel from "../models/userModel.js";
+import productModel from "../models/productModel.js";
 import promoModel from "../models/promoModel.js";
 import { evaluatePromo } from "./promoController.js";
+import { cacheDel } from "../config/cache.js";
 import Stripe from "stripe";
 import dotenv from "dotenv";
 
@@ -15,6 +17,27 @@ const placeOrder = async (req, res) => {
   const frontend_url = process.env.FRONTEND_URL;
 
   try {
+    // Verify stock availability server-side before anything else, so we never
+    // create a Stripe session for items we can't actually fulfil.
+    const stockIssues = [];
+    for (const item of req.body.items) {
+      const product = await productModel.findById(item._id).select("name stock");
+      if (!product) {
+        stockIssues.push(`${item.name} is no longer available`);
+      } else if (product.stock < item.quantity) {
+        stockIssues.push(
+          `${product.name} — only ${product.stock} left (you asked for ${item.quantity})`
+        );
+      }
+    }
+    if (stockIssues.length > 0) {
+      return res.json({
+        success: false,
+        message: stockIssues.join(". "),
+        outOfStock: true,
+      });
+    }
+
     // Recompute the subtotal from the items server-side (don't trust client amount)
     const subtotal = req.body.items.reduce(
       (sum, item) => sum + item.price * item.quantity,
@@ -113,6 +136,19 @@ const verifyOrder = async (req, res) => {
       const order = await orderModel.findByIdAndUpdate(orderId, {
         payment: true,
       });
+      // Decrement stock only after a confirmed payment, so abandoned checkouts
+      // never reserve inventory. Atomic $inc avoids lost-update races.
+      if (order && Array.isArray(order.items)) {
+        await Promise.all(
+          order.items.map((item) =>
+            productModel.updateOne(
+              { _id: item._id },
+              { $inc: { stock: -Math.abs(item.quantity || 0) } }
+            )
+          )
+        );
+        await cacheDel("products:list"); // stock changed, refresh cached list
+      }
       // Burn the promo for this user only after a confirmed payment, so a
       // cancelled checkout never costs them their one-time code.
       if (order && order.promoCode) {

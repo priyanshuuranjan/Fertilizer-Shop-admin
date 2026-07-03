@@ -4,11 +4,55 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { ListRowSkeleton } from "../../components/Skeleton/Skeleton";
 
-const List = ({ url }) => {
+const List = ({ url, isSuperAdmin }) => {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(new Set());
   const [bulkLoading, setBulkLoading] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [editValue, setEditValue] = useState("");
+
+  const startEdit = (item) => {
+    setEditingId(item._id);
+    setEditValue(String(item.stock ?? 0));
+  };
+
+  const saveStock = async (productId) => {
+    const trimmed = String(editValue).trim();
+    const qty = Number(trimmed);
+    if (trimmed === "" || !Number.isFinite(qty) || qty < 0) {
+      toast.error("Enter a valid stock number (0 or more)");
+      return;
+    }
+    try {
+      const res = await axios.post(`${url}/api/product/update-stock`, {
+        id: productId,
+        stock: qty,
+      });
+      if (res.data.success) {
+        setList((prev) =>
+          prev.map((p) =>
+            p._id === productId ? { ...p, stock: res.data.stock } : p
+          )
+        );
+        setEditingId(null);
+        toast.success("Stock updated");
+      } else {
+        toast.error(res.data.message || "Update failed");
+      }
+    } catch (err) {
+      // Surface the real reason instead of a generic message — a 404 here
+      // usually means the backend serving this panel doesn't have the route yet.
+      if (err.response?.status === 404) {
+        toast.error("Endpoint not found — restart/redeploy the backend");
+      } else {
+        toast.error(
+          err.response?.data?.message ||
+            `Request failed${err.response ? ` (${err.response.status})` : " (no response)"}`
+        );
+      }
+    }
+  };
 
   const fetchList = async () => {
     setLoading(true);
@@ -28,10 +72,18 @@ const List = ({ url }) => {
   };
 
   const removeProduct = async (productId) => {
-    const response = await axios.post(`${url}/api/product/remove`, { id: productId });
-    await fetchList();
-    if (response.data.success) toast.success(response.data.message);
-    else toast.error("Error");
+    if (!isSuperAdmin) return;
+    try {
+      const response = await axios.post(`${url}/api/product/remove`, { id: productId });
+      if (response.data.success) {
+        toast.success(response.data.message);
+        await fetchList();
+      } else {
+        toast.error(response.data.message || "Error");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Server error");
+    }
   };
 
   const toggleSelect = (id) => {
@@ -51,7 +103,7 @@ const List = ({ url }) => {
   };
 
   const bulkDelete = async () => {
-    if (selected.size === 0) return;
+    if (!isSuperAdmin || selected.size === 0) return;
     if (!window.confirm(`Delete ${selected.size} selected product(s)?`)) return;
     setBulkLoading(true);
     try {
@@ -81,7 +133,7 @@ const List = ({ url }) => {
     <div className="list add flex-col">
       <div className="list-header">
         <p>All Products List</p>
-        {selected.size > 0 && (
+        {isSuperAdmin && selected.size > 0 && (
           <button
             className="bulk-delete-btn"
             onClick={bulkDelete}
@@ -94,17 +146,22 @@ const List = ({ url }) => {
 
       <div className="list-table">
         <div className="list-table-format title">
-          <input
-            type="checkbox"
-            className="row-check"
-            checked={allSelected}
-            onChange={toggleSelectAll}
-          />
+          {isSuperAdmin ? (
+            <input
+              type="checkbox"
+              className="row-check"
+              checked={allSelected}
+              onChange={toggleSelectAll}
+            />
+          ) : (
+            <span />
+          )}
           <b>Image</b>
           <b>Name</b>
           <b>Category</b>
           <b>Size</b>
           <b>Price</b>
+          <b>Stock</b>
           <b>Action</b>
         </div>
 
@@ -115,23 +172,65 @@ const List = ({ url }) => {
                 key={item._id}
                 className={`list-table-format ${selected.has(item._id) ? "row-selected" : ""}`}
               >
-                <input
-                  type="checkbox"
-                  className="row-check"
-                  checked={selected.has(item._id)}
-                  onChange={() => toggleSelect(item._id)}
-                />
+                {isSuperAdmin ? (
+                  <input
+                    type="checkbox"
+                    className="row-check"
+                    checked={selected.has(item._id)}
+                    onChange={() => toggleSelect(item._id)}
+                  />
+                ) : (
+                  <span />
+                )}
                 <img src={`${url}/images/${item.image}`} alt="" />
                 <p>{item.name}</p>
                 <p>{item.category}</p>
                 <p>{item.size}</p>
                 <p>₹{item.price}</p>
-                <p
-                  onClick={() => removeProduct(item._id)}
-                  className="cursor remove-btn"
-                >
-                  X
+                <p>
+                  {editingId === item._id ? (
+                    <span className="stock-edit">
+                      <input
+                        type="number"
+                        min="0"
+                        autoFocus
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") saveStock(item._id);
+                          if (e.key === "Escape") setEditingId(null);
+                        }}
+                      />
+                      <button onClick={() => saveStock(item._id)} title="Save">
+                        ✓
+                      </button>
+                    </span>
+                  ) : (
+                    <span
+                      className={`stock-badge editable ${
+                        (item.stock ?? 0) === 0
+                          ? "out"
+                          : item.stock <= 10
+                          ? "low"
+                          : "in"
+                      }`}
+                      onClick={() => startEdit(item)}
+                      title="Click to edit stock"
+                    >
+                      {(item.stock ?? 0) === 0 ? "Out" : item.stock}
+                    </span>
+                  )}
                 </p>
+                {isSuperAdmin ? (
+                  <p
+                    onClick={() => removeProduct(item._id)}
+                    className="cursor remove-btn"
+                  >
+                    X
+                  </p>
+                ) : (
+                  <p />
+                )}
               </div>
             ))}
       </div>

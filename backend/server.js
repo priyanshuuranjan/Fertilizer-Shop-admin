@@ -15,6 +15,7 @@ import customerRouter from "./routes/customerRoute.js";
 import { apiLimiter } from "./middleware/rateLimiter.js";
 import { morganMiddleware } from "./middleware/logger.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import { securityHeaders, sanitizeInput } from "./middleware/security.js";
 
 dotenv.config();
 
@@ -27,8 +28,10 @@ const io = new Server(httpServer, {
 
 const PORT = process.env.PORT || 4000;
 
+app.use(securityHeaders);
 app.use(express.json());
 app.use(cors());
+app.use(sanitizeInput);
 app.use(morganMiddleware);
 app.use("/api/", apiLimiter);
 

@@ -37,7 +37,10 @@ const Login = ({ url, onLogin }) => {
       const res = await axios.post(`${url}/api/admin/login`, data);
       if (res.data.success) {
         setSuccess(true);
-        setTimeout(() => onLogin(res.data.token), 1000);
+        setTimeout(
+          () => onLogin(res.data.token, res.data.role, res.data.name),
+          1000
+        );
       } else {
         toast.error(res.data.message || "Login failed");
         setLoading(false);

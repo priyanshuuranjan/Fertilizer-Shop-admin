@@ -54,13 +54,17 @@ Three independent apps working together:
 - Promo code / discount support at checkout
 - Stripe payment gateway (test mode)
 - Order history with real-time status tracking
-- Skeleton shimmer loaders on every async screen
+- **Out-of-stock products** grayed out and disabled automatically
+- **Downloadable PDF invoice** for every paid order
+- Skeleton shimmer loaders + modern hover/entrance animations
 - Fully responsive (mobile-first)
 
 ### ⚙️ Admin Panel *(Login protected)*
-- **📊 Dashboard** — Revenue cards, 7-day bar chart (Recharts), recent orders table
+- **📊 Dashboard** — Animated revenue cards (count-up), 7-day bar chart (Recharts), recent orders table
+- **📈 Sales Analytics** — Best-selling products, revenue by category, monthly trend
+- **⚠️ Low-Stock Alerts** — Products at/under 10 units flagged on the dashboard
 - **➕ Add Product** — Image upload, name, price, size, category, stock quantity
-- **📋 Product List** — Checkbox bulk-select, bulk delete, individual delete
+- **📋 Product List** — Checkbox bulk-select, bulk delete, live in/low/out stock badges
 - **📦 Orders** — All orders, status update (Processing → Shipped → Delivered), **CSV Export**
 - **👥 Customers** — All users with order count & total spent, search & sort
 - **🎟️ Promo Codes** — Create & manage discount codes
@@ -71,6 +75,13 @@ Three independent apps working together:
 ### 🖥️ Backend API
 - RESTful API — Express + MongoDB/Mongoose
 - JWT authentication (stateless — no server sessions)
+- **Helmet** security headers + **NoSQL injection sanitization**
+- **express-validator** request validation on every write route
+- **Stock management** — availability check at checkout, atomic decrement on paid orders
+- **Paginated search** — page/limit/search/category/price/sort with DB indexes
+- **Caching layer** — Redis when configured, in-memory fallback otherwise (60s TTL)
+- **PDF invoices** generated on the fly with PDFKit
+- **Aggregation analytics** — best sellers, category revenue, monthly trend
 - Rate limiting — 200 req / 15 min per IP
 - Request logging — Morgan + Winston (saved to `logs/`)
 - Centralized error handling middleware
@@ -94,6 +105,11 @@ Three independent apps working together:
 | Socket.io | v4 | WebSocket bi-directional communication for real-time events |
 | Multer | v1.4 | Multipart form file uploads |
 | express-rate-limit | latest | DDoS / brute-force protection |
+| Helmet | latest | Secure HTTP response headers |
+| express-mongo-sanitize | latest | Blocks NoSQL ($/.) injection payloads |
+| express-validator | latest | Declarative request body validation |
+| ioredis | latest | Redis client for the caching layer |
+| PDFKit | latest | Server-side PDF invoice generation |
 | Morgan + Winston | latest | HTTP request logs + structured file-based logging |
 
 ### Frontend / Admin
@@ -125,18 +141,22 @@ Fertilizer-Shop-admin/
 ├── 📁 backend/                         ← Express REST API
 │   ├── server.js                       ← Entry point (HTTP + Socket.io server)
 │   ├── config/
-│   │   └── db.js                       ← MongoDB Atlas connection
+│   │   ├── db.js                       ← MongoDB Atlas connection
+│   │   └── cache.js                    ← Redis / in-memory cache abstraction
 │   ├── controllers/                    ← Business logic
-│   │   ├── productController.js        ← Add / list / remove / bulk-remove
-│   │   ├── orderController.js          ← Place / verify / list / export CSV
+│   │   ├── productController.js        ← Add / list / search / remove / bulk
+│   │   ├── orderController.js          ← Place / verify / list / export CSV / stock
+│   │   ├── invoiceController.js        ← PDF invoice generation (PDFKit)
 │   │   ├── userController.js           ← Register / login
 │   │   ├── cartController.js
 │   │   ├── promoController.js          ← Promo code validate & burn
-│   │   ├── dashboardController.js      ← Stats + 7-day chart data
+│   │   ├── dashboardController.js      ← Stats, low-stock + aggregation analytics
 │   │   ├── customerController.js       ← Users with order stats
 │   │   └── adminController.js          ← Admin login
 │   ├── middleware/
 │   │   ├── auth.js                     ← JWT verify middleware
+│   │   ├── security.js                 ← Helmet + mongo-sanitize
+│   │   ├── validate.js                 ← express-validator rules + runner
 │   │   ├── rateLimiter.js              ← 200 req / 15 min per IP
 │   │   ├── logger.js                   ← Morgan + Winston
 │   │   └── errorHandler.js             ← Centralized error responses
@@ -209,24 +229,30 @@ React (Frontend / Admin)
         │
         │  HTTP Request  (e.g. GET /api/product/list)
         ▼
-┌────────────────────────────────────────┐
-│            Express Server              │
-│                                        │
-│  1. cors()           ← allow origins   │
-│  2. rateLimiter      ← max 200/15 min  │
-│  3. morganMiddleware ← log request     │
-│  4. express.json()   ← parse body      │
-│                                        │
-│  Router  →  productRoute.js            │
-│       ↓                                │
-│  Controller  →  listProduct()          │
-│       ↓                                │
-│  Mongoose  →  productModel.find({})    │
-│       ↓                                │
-│  MongoDB Atlas  (cloud query)          │
-│       ↓                                │
-│  Response: { success: true, data: [] } │
-└────────────────────────────────────────┘
+┌──────────────────────────────────────────────┐
+│               Express Server                 │
+│                                              │
+│  1. helmet()         ← security headers      │
+│  2. express.json()   ← parse body            │
+│  3. cors()           ← allow origins         │
+│  4. mongoSanitize()  ← strip $/. injection   │
+│  5. morganMiddleware ← log request           │
+│  6. rateLimiter      ← max 200/15 min        │
+│                                              │
+│  Router  →  productRoute.js                  │
+│       ↓                                      │
+│  validate()  ← express-validator (writes)    │
+│       ↓                                      │
+│  Controller  →  listProduct()                │
+│       ↓                                      │
+│  Cache hit? ──yes──►  return cached data     │
+│       │ no                                   │
+│  Mongoose  →  productModel.find({})          │
+│       ↓                                      │
+│  MongoDB Atlas  →  warm cache (60s TTL)      │
+│       ↓                                      │
+│  Response: { success: true, data: [] }       │
+└──────────────────────────────────────────────┘
         │
         ▼
 React  →  setList(data)  →  UI re-renders
@@ -283,6 +309,60 @@ POST /api/order/place  (backend)
                 │
                 ▼
         🔔 Bell badge updates INSTANTLY — zero page refresh
+```
+
+### Order & Stock Flow
+
+```
+POST /api/order/place
+        │
+        ▼
+For each item → check productModel.stock >= quantity
+        │
+        ├── ❌ Insufficient → reject ("only N left"), NO Stripe session
+        │
+        └── ✅ All available
+                │
+                ▼
+        Create order (payment: false) + Stripe checkout session
+                │
+        ┌───────┴────────────┐
+        ▼                    ▼
+   Payment success      Payment cancelled
+   /verify (true)       /verify (false)
+        │                    │
+        ▼                    ▼
+   payment = true       order deleted
+   $inc stock −qty      (no stock touched)
+   burn promo code
+   invalidate cache
+```
+
+> Stock is decremented **only after confirmed payment** using an atomic `$inc`,
+> so abandoned checkouts never reserve inventory and concurrent orders can't
+> oversell.
+
+### Caching Flow (graceful degradation)
+
+```
+GET /api/product/list
+        │
+        ▼
+cacheGet("products:list")
+        │
+        ├── HIT  →  return cached JSON   (response: cached: true)
+        │
+        └── MISS →  productModel.find({})
+                        │
+                        ▼
+                cacheSet(list, TTL 60s)  →  return fresh data
+
+Cache backend chosen at boot:
+   REDIS_URL set?  ──yes──►  Redis (shared across PM2 workers, survives restart)
+                   ──no───►  in-memory Map with TTL (zero-config dev)
+
+Writes (add / remove / bulk / stock change) → cacheDel("products:list")
+A Redis outage logs a warning and falls back to the DB — never a 500.
 ```
 
 ---
@@ -455,6 +535,8 @@ STRIPE_SECRET_KEY=sk_test_xxxxxxxxxxxxxxxxxxxx
 FRONTEND_URL=http://localhost:5173
 ADMIN_EMAIL=admin@yourshop.com
 ADMIN_PASSWORD=YourSecurePassword
+# Optional — enables Redis caching. If unset, an in-memory cache is used.
+REDIS_URL=redis://localhost:6379
 ```
 
 **`frontend/.env`**
@@ -478,8 +560,9 @@ Base URL: `http://localhost:8000`
 ### Products — `/api/product`
 | Method | Endpoint | Body | Description |
 |--------|----------|------|-------------|
-| `POST` | `/add` | `multipart/form-data` — name, description, price, size, category, stock, image | Add a product |
-| `GET` | `/list` | — | All products |
+| `POST` | `/add` | `multipart/form-data` — name, description, price, size, category, stock, image | Add a product *(validated)* |
+| `GET` | `/list` | — | All products *(cached 60s)* |
+| `GET` | `/search` | query: `page, limit, q, category, minPrice, maxPrice, sort` | Paginated/filtered/sorted search |
 | `POST` | `/remove` | `{ id }` | Delete one product |
 | `POST` | `/bulk-remove` | `{ ids: [] }` | Delete multiple products |
 
@@ -498,6 +581,7 @@ Base URL: `http://localhost:8000`
 | `GET` | `/list` | — | All orders (admin) |
 | `POST` | `/status` | — | Update order status |
 | `GET` | `/export` | — | Download all orders as CSV |
+| `GET` | `/invoice/:orderId` | — | Download order invoice as PDF |
 
 ### Cart — `/api/cart` *(JWT required)*
 | Method | Endpoint | Body | Description |
@@ -509,7 +593,8 @@ Base URL: `http://localhost:8000`
 ### Dashboard & Customers
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `GET` | `/api/dashboard/stats` | Revenue, orders, users, products, 7-day chart data |
+| `GET` | `/api/dashboard/stats` | Revenue, orders, users, products, 7-day chart, low-stock list |
+| `GET` | `/api/dashboard/analytics` | Best sellers, revenue by category, monthly trend (aggregation) |
 | `GET` | `/api/customers/list` | All users with order count + total spent |
 
 ### Admin & Promo
@@ -563,6 +648,9 @@ pm2 save && pm2 startup           # persist across server reboots
 |-------|-----------|--------|
 | Passwords | Bcrypt | 10 salt rounds — one-way hash, irreversible |
 | Authentication | JWT | Stateless, 7-day expiry, signed with secret |
+| Security Headers | Helmet | X-Frame-Options, nosniff, HSTS, and more |
+| NoSQL Injection | express-mongo-sanitize | Strips `$` / `.` keys from request payloads |
+| Input Validation | express-validator | Rejects malformed bodies with a 400 before the controller |
 | Rate Limiting | express-rate-limit | 200 req / 15 min per IP (API) |
 | Payments | Stripe | PCI-compliant — card data never touches our server |
 | Cross-Origin | CORS | Only whitelisted origins accepted |

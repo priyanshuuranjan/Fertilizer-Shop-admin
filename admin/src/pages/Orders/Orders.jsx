@@ -4,11 +4,26 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { assets } from "../../assets/assets";
 import { OrderCardSkeleton } from "../../components/Skeleton/Skeleton";
+import PrintSlip from "../../components/PrintSlip/PrintSlip";
 
 const Orders = ({ url }) => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
+  const [printOrder, setPrintOrder] = useState(null);
+
+  // Mount the slip off-screen, fire the browser print dialog, then unmount
+  // once it closes — a packing slip straight from the browser, no PDF download.
+  useEffect(() => {
+    if (!printOrder) return;
+    const cleanup = () => setPrintOrder(null);
+    window.addEventListener("afterprint", cleanup);
+    const timer = setTimeout(() => window.print(), 80);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("afterprint", cleanup);
+    };
+  }, [printOrder]);
 
   const fetchAllOrders = async () => {
     setLoading(true);
@@ -107,18 +122,29 @@ const Orders = ({ url }) => {
                 </div>
                 <p>Items : {order.items.length}</p>
                 <p>₹{order.amount}</p>
-                <select
-                  onChange={(event) => statusHandler(event, order._id)}
-                  value={order.status}
-                >
-                  <option value="Order Confirmed">Order Confirmed</option>
-                  <option value="Order Shipped">Order Shipped</option>
-                  <option value="Out for delivery">Out For Delivery</option>
-                  <option value="Delivered">Delivered</option>
-                </select>
+                <div className="order-item-actions">
+                  <select
+                    onChange={(event) => statusHandler(event, order._id)}
+                    value={order.status}
+                  >
+                    <option value="Order Confirmed">Order Confirmed</option>
+                    <option value="Order Shipped">Order Shipped</option>
+                    <option value="Out for delivery">Out For Delivery</option>
+                    <option value="Delivered">Delivered</option>
+                  </select>
+                  <button
+                    className="print-order-btn"
+                    onClick={() => setPrintOrder(order)}
+                    title="Print packing slip"
+                  >
+                    🖨️ Print
+                  </button>
+                </div>
               </div>
             ))}
       </div>
+
+      <PrintSlip order={printOrder} />
     </div>
   );
 };

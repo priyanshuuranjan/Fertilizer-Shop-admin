@@ -2,10 +2,14 @@ import express from "express";
 import {
   addProduct,
   listProduct,
+  searchProducts,
+  updateStock,
   removeProduct,
   bulkRemoveProducts,
 } from "../controllers/productController.js";
 import multer from "multer";
+import { validate, productRules } from "../middleware/validate.js";
+import { verifyAdmin, requireSuperAdmin } from "../middleware/adminAuth.js";
 
 // Image storage configuration
 const storage = multer.diskStorage({
@@ -22,9 +26,13 @@ const upload = multer({ storage });
 const productRouter = express.Router();
 
 // Route to handle product upload (All routes are related to productController)
-productRouter.post("/add", upload.single("image"), addProduct);
+// /list and /search stay public — the customer storefront reads them too.
+productRouter.post("/add", verifyAdmin, upload.single("image"), productRules, validate, addProduct);
 productRouter.get("/list", listProduct);
-productRouter.post("/remove", removeProduct);
-productRouter.post("/bulk-remove", bulkRemoveProducts);
+productRouter.get("/search", searchProducts);
+productRouter.post("/update-stock", verifyAdmin, updateStock);
+// Deleting products is Super Admin only — Staff can add/edit but not remove.
+productRouter.post("/remove", verifyAdmin, requireSuperAdmin, removeProduct);
+productRouter.post("/bulk-remove", verifyAdmin, requireSuperAdmin, bulkRemoveProducts);
 
 export default productRouter;
