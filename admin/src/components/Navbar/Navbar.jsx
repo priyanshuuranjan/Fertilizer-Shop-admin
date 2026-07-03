@@ -70,6 +70,7 @@ const Navbar = ({ onLogout, name, role }) => {
         <div className="navbar-right-admin">
           {name && (
             <span className={`role-badge ${role === "superadmin" ? "role-super" : "role-staff"}`}>
+              <span className="role-badge-dot" />
               {name} · {role === "superadmin" ? "Super Admin" : "Staff"}
             </span>
           )}

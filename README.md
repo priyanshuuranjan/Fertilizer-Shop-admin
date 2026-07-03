@@ -11,7 +11,7 @@
 [![Stripe](https://img.shields.io/badge/Payments-Stripe-6772E5?logo=stripe&logoColor=white)](https://stripe.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**[🛒 Customer Site](https://kumarfertilizer.onrender.com)** · **[⚙️ Admin Panel](https://fertilizer-shop-admin-backend.onrender.com)** · **[🐛 Report Bug](https://github.com/priyanshuuranjan/Fertilizer-Shop-admin/issues)**
+**[🛒 Customer Site](https://kumarfertilizer.onrender.com)** · **[⚙️ Admin Panel](https://kumaradmin.onrender.com)** · **[🐛 Report Bug](https://github.com/priyanshuuranjan/Fertilizer-Shop-admin/issues)**
 
 </div>
 

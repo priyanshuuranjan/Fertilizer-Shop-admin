@@ -167,10 +167,11 @@ const List = ({ url, isSuperAdmin }) => {
 
         {loading
           ? Array.from({ length: 6 }).map((_, i) => <ListRowSkeleton key={i} />)
-          : list.map((item) => (
+          : list.map((item, i) => (
               <div
                 key={item._id}
                 className={`list-table-format ${selected.has(item._id) ? "row-selected" : ""}`}
+                style={{ "--i": Math.min(i, 10) }}
               >
                 {isSuperAdmin ? (
                   <input
