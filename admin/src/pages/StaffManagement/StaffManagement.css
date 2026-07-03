@@ -1,0 +1,124 @@
+.staff-page {
+  flex: 1;
+  padding: 30px 24px;
+  overflow-y: auto;
+}
+
+.staff-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--light-text);
+  margin-bottom: 6px;
+}
+
+.staff-sub {
+  color: var(--light-text-secondary);
+  font-size: 13px;
+  margin-bottom: 20px;
+  max-width: 560px;
+}
+
+.staff-form {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 26px;
+}
+
+.staff-form input {
+  flex: 1;
+  min-width: 180px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--sidebar);
+  color: var(--light-text);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.staff-form input:focus {
+  border-color: tomato;
+}
+
+.staff-form button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  background: tomato;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.staff-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.staff-list {
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.staff-row {
+  display: grid;
+  grid-template-columns: 1.5fr 2fr 1fr 100px;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 10px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--light-text);
+  font-size: 14px;
+}
+
+.staff-row:last-child {
+  border-bottom: none;
+}
+
+.staff-header {
+  background: var(--sidebar);
+  font-weight: 700;
+  color: var(--light-text-secondary);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.staff-empty {
+  padding: 20px;
+  text-align: center;
+  color: var(--light-text-secondary);
+}
+
+.staff-remove {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ef444455;
+  background: transparent;
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.staff-remove:hover {
+  background: #ef444422;
+}
+
+@media (max-width: 640px) {
+  .staff-row {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "name name"
+      "email email"
+      "added remove";
+  }
+  .staff-row span:nth-child(1) { grid-area: name; }
+  .staff-row span:nth-child(2) { grid-area: email; word-break: break-all; }
+  .staff-row span:nth-child(3) { grid-area: added; }
+  .staff-row span:nth-child(4) { grid-area: remove; text-align: right; }
+}

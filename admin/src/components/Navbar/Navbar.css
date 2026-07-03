@@ -56,6 +56,32 @@
   border-radius: 5px;
   cursor: pointer;
 }
+.role-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+  color: var(--light-text-secondary);
+  white-space: nowrap;
+}
+
+.role-super {
+  color: #22c55e;
+  border-color: #22c55e55;
+}
+
+.role-staff {
+  color: #3b82f6;
+  border-color: #3b82f655;
+}
+
+@media (max-width: 640px) {
+  .role-badge {
+    display: none;
+  }
+}
+
 .notif-btn {
   position: relative;
   background: transparent;

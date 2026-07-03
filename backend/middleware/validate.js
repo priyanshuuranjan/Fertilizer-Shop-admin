@@ -37,6 +37,14 @@ export const productRules = [
     .withMessage("Stock must be a non-negative whole number"),
 ];
 
+export const staffRules = [
+  body("name").trim().notEmpty().withMessage("Name is required"),
+  body("email").isEmail().withMessage("A valid email is required").normalizeEmail(),
+  body("password")
+    .isLength({ min: 8 })
+    .withMessage("Password must be at least 8 characters"),
+];
+
 export const placeOrderRules = [
   body("items")
     .isArray({ min: 1 })

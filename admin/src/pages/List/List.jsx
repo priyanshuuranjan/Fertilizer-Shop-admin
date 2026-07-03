@@ -4,7 +4,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { ListRowSkeleton } from "../../components/Skeleton/Skeleton";
 
-const List = ({ url }) => {
+const List = ({ url, isSuperAdmin }) => {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(new Set());
@@ -72,10 +72,18 @@ const List = ({ url }) => {
   };
 
   const removeProduct = async (productId) => {
-    const response = await axios.post(`${url}/api/product/remove`, { id: productId });
-    await fetchList();
-    if (response.data.success) toast.success(response.data.message);
-    else toast.error("Error");
+    if (!isSuperAdmin) return;
+    try {
+      const response = await axios.post(`${url}/api/product/remove`, { id: productId });
+      if (response.data.success) {
+        toast.success(response.data.message);
+        await fetchList();
+      } else {
+        toast.error(response.data.message || "Error");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Server error");
+    }
   };
 
   const toggleSelect = (id) => {
@@ -95,7 +103,7 @@ const List = ({ url }) => {
   };
 
   const bulkDelete = async () => {
-    if (selected.size === 0) return;
+    if (!isSuperAdmin || selected.size === 0) return;
     if (!window.confirm(`Delete ${selected.size} selected product(s)?`)) return;
     setBulkLoading(true);
     try {
@@ -125,7 +133,7 @@ const List = ({ url }) => {
     <div className="list add flex-col">
       <div className="list-header">
         <p>All Products List</p>
-        {selected.size > 0 && (
+        {isSuperAdmin && selected.size > 0 && (
           <button
             className="bulk-delete-btn"
             onClick={bulkDelete}
@@ -138,12 +146,16 @@ const List = ({ url }) => {
 
       <div className="list-table">
         <div className="list-table-format title">
-          <input
-            type="checkbox"
-            className="row-check"
-            checked={allSelected}
-            onChange={toggleSelectAll}
-          />
+          {isSuperAdmin ? (
+            <input
+              type="checkbox"
+              className="row-check"
+              checked={allSelected}
+              onChange={toggleSelectAll}
+            />
+          ) : (
+            <span />
+          )}
           <b>Image</b>
           <b>Name</b>
           <b>Category</b>
@@ -160,12 +172,16 @@ const List = ({ url }) => {
                 key={item._id}
                 className={`list-table-format ${selected.has(item._id) ? "row-selected" : ""}`}
               >
-                <input
-                  type="checkbox"
-                  className="row-check"
-                  checked={selected.has(item._id)}
-                  onChange={() => toggleSelect(item._id)}
-                />
+                {isSuperAdmin ? (
+                  <input
+                    type="checkbox"
+                    className="row-check"
+                    checked={selected.has(item._id)}
+                    onChange={() => toggleSelect(item._id)}
+                  />
+                ) : (
+                  <span />
+                )}
                 <img src={`${url}/images/${item.image}`} alt="" />
                 <p>{item.name}</p>
                 <p>{item.category}</p>
@@ -205,12 +221,16 @@ const List = ({ url }) => {
                     </span>
                   )}
                 </p>
-                <p
-                  onClick={() => removeProduct(item._id)}
-                  className="cursor remove-btn"
-                >
-                  X
-                </p>
+                {isSuperAdmin ? (
+                  <p
+                    onClick={() => removeProduct(item._id)}
+                    className="cursor remove-btn"
+                  >
+                    X
+                  </p>
+                ) : (
+                  <p />
+                )}
               </div>
             ))}
       </div>

@@ -60,16 +60,19 @@ const getDashboardStats = async (req, res) => {
       revenue,
     }));
 
+    // Staff can see order/product/customer counts and fulfil orders, but
+    // revenue figures are Super Admin only.
+    const isSuperAdmin = req.admin?.role === "superadmin";
+
     res.json({
       success: true,
       data: {
         totalOrders,
         totalProducts,
         totalUsers,
-        totalRevenue,
-        chartData,
         recentOrders,
         lowStockProducts,
+        ...(isSuperAdmin ? { totalRevenue, chartData } : {}),
       },
     });
   } catch (error) {

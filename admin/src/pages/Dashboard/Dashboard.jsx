@@ -57,7 +57,7 @@ const StatCard = ({ label, rawValue, format, icon, accent, index }) => {
   );
 };
 
-const Dashboard = ({ url }) => {
+const Dashboard = ({ url, isSuperAdmin }) => {
   const [stats, setStats] = useState(null);
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -65,13 +65,20 @@ const Dashboard = ({ url }) => {
   useEffect(() => {
     const fetchAll = async () => {
       try {
-        const [statsRes, analyticsRes] = await Promise.all([
-          axios.get(`${url}/api/dashboard/stats`),
-          axios.get(`${url}/api/dashboard/analytics`),
-        ]);
+        const statsRes = await axios.get(`${url}/api/dashboard/stats`);
         if (statsRes.data.success) setStats(statsRes.data.data);
         else toast.error("Failed to load dashboard");
-        if (analyticsRes.data.success) setAnalytics(analyticsRes.data.data);
+
+        // Analytics is Super Admin only — the backend 403s Staff, so skip
+        // the request (and the noisy error toast) for them entirely.
+        if (isSuperAdmin) {
+          try {
+            const analyticsRes = await axios.get(`${url}/api/dashboard/analytics`);
+            if (analyticsRes.data.success) setAnalytics(analyticsRes.data.data);
+          } catch {
+            // non-fatal — dashboard still renders without the analytics section
+          }
+        }
       } catch {
         toast.error("Server error");
       } finally {
@@ -79,7 +86,7 @@ const Dashboard = ({ url }) => {
       }
     };
     fetchAll();
-  }, [url]);
+  }, [url, isSuperAdmin]);
 
   if (loading) {
     return (
@@ -98,7 +105,9 @@ const Dashboard = ({ url }) => {
     n >= 1000 ? `₹${(n / 1000).toFixed(1)}k` : `₹${n}`;
 
   const cards = [
-    { label: "Total Revenue", rawValue: stats.totalRevenue, format: fmtMoney, icon: "₹", accent: "#22c55e" },
+    ...(isSuperAdmin
+      ? [{ label: "Total Revenue", rawValue: stats.totalRevenue, format: fmtMoney, icon: "₹", accent: "#22c55e" }]
+      : []),
     { label: "Total Orders", rawValue: stats.totalOrders, icon: "📦", accent: "#3b82f6" },
     { label: "Products", rawValue: stats.totalProducts, icon: "🌱", accent: "#f59e0b" },
     { label: "Customers", rawValue: stats.totalUsers, icon: "👤", accent: "#ec4899" },
@@ -126,6 +135,7 @@ const Dashboard = ({ url }) => {
         ))}
       </div>
 
+      {isSuperAdmin && stats.chartData && (
       <div className="chart-section">
         <h3 className="section-title">Last 7 Days Revenue</h3>
         <div className="chart-wrap">
@@ -140,8 +150,9 @@ const Dashboard = ({ url }) => {
           </ResponsiveContainer>
         </div>
       </div>
+      )}
 
-      {analytics && (
+      {isSuperAdmin && analytics && (
         <div className="analytics-row">
           <div className="recent-section analytics-card">
             <h3 className="section-title">🏆 Best Sellers</h3>

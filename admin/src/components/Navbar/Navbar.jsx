@@ -5,7 +5,7 @@ import "./Navbar.css";
 
 let socket = null;
 
-const Navbar = ({ onLogout }) => {
+const Navbar = ({ onLogout, name, role }) => {
   const [notifCount, setNotifCount] = useState(0);
   const navigate = useNavigate();
 
@@ -68,6 +68,11 @@ const Navbar = ({ onLogout }) => {
         </p>
 
         <div className="navbar-right-admin">
+          {name && (
+            <span className={`role-badge ${role === "superadmin" ? "role-super" : "role-staff"}`}>
+              {name} · {role === "superadmin" ? "Super Admin" : "Staff"}
+            </span>
+          )}
           <button className="notif-btn" onClick={handleBellClick} title="New orders">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />

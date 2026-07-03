@@ -6,6 +6,7 @@ import {
   removePromo,
   togglePromo,
 } from "../controllers/promoController.js";
+import { verifyAdmin } from "../middleware/adminAuth.js";
 
 const promoRouter = express.Router();
 
@@ -13,9 +14,9 @@ const promoRouter = express.Router();
 promoRouter.post("/apply", applyPromo);
 
 // admin
-promoRouter.post("/create", createPromo);
-promoRouter.get("/list", listPromos);
-promoRouter.post("/remove", removePromo);
-promoRouter.post("/toggle", togglePromo);
+promoRouter.post("/create", verifyAdmin, createPromo);
+promoRouter.get("/list", verifyAdmin, listPromos);
+promoRouter.post("/remove", verifyAdmin, removePromo);
+promoRouter.post("/toggle", verifyAdmin, togglePromo);
 
 export default promoRouter;

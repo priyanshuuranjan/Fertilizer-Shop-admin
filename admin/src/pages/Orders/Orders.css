@@ -50,12 +50,35 @@
 .order-item-address {
   margin-bottom: 10px;
 }
+.order-item-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .order-item select {
   background-color: #ffe8e4;
   border: 1px solid tomato;
   width: max(10vw, 120px);
   padding: 10px;
   outline: none;
+}
+
+.print-order-btn {
+  background: transparent;
+  border: 1px solid tomato;
+  color: tomato;
+  padding: 7px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.print-order-btn:hover {
+  background: tomato;
+  color: white;
 }
 
 :root .order-item select {
