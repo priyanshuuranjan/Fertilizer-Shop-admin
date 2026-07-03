@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useTilt } from "../../hooks/useTilt";
 import "./StaffManagement.css";
 
 const emptyForm = { name: "", email: "", password: "" };
@@ -10,6 +11,7 @@ const StaffManagement = ({ url }) => {
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState(emptyForm);
   const [creating, setCreating] = useState(false);
+  const tilt = useTilt(6);
 
   const fetchStaff = async () => {
     setLoading(true);
@@ -67,12 +69,19 @@ const StaffManagement = ({ url }) => {
 
   return (
     <div className="staff-page">
-      <h2 className="staff-title">Manage Staff</h2>
-      <p className="staff-sub">
+      <h2 className="staff-title fade-in-stagger">Manage Staff</h2>
+      <p className="staff-sub fade-in-stagger" style={{ "--delay": "0.05s" }}>
         Staff accounts can manage products and orders, but cannot delete products or view revenue figures.
       </p>
 
-      <form className="staff-form" onSubmit={onSubmit}>
+      <form
+        ref={tilt.ref}
+        onMouseMove={tilt.onMouseMove}
+        onMouseLeave={tilt.onMouseLeave}
+        className="staff-form tilt-3d fade-in-stagger"
+        style={{ "--delay": "0.1s" }}
+        onSubmit={onSubmit}
+      >
         <input
           name="name"
           placeholder="Full name"
@@ -97,12 +106,16 @@ const StaffManagement = ({ url }) => {
           minLength={8}
           required
         />
-        <button type="submit" disabled={creating}>
-          {creating ? "Creating..." : "Add Staff"}
+        <button type="submit" className="staff-submit-btn" disabled={creating}>
+          {creating ? (
+            <span className="staff-submit-spinner" />
+          ) : (
+            <>Add Staff <span className="staff-submit-arrow">→</span></>
+          )}
         </button>
       </form>
 
-      <div className="staff-list">
+      <div className="staff-list fade-in-stagger" style={{ "--delay": "0.18s" }}>
         <div className="staff-row staff-header">
           <span>Name</span>
           <span>Email</span>
@@ -114,8 +127,12 @@ const StaffManagement = ({ url }) => {
         ) : staff.length === 0 ? (
           <p className="staff-empty">No staff accounts yet — add one above.</p>
         ) : (
-          staff.map((s) => (
-            <div key={s._id} className="staff-row">
+          staff.map((s, i) => (
+            <div
+              key={s._id}
+              className="staff-row fade-in-stagger"
+              style={{ "--delay": `${0.2 + i * 0.05}s` }}
+            >
               <span>{s.name}</span>
               <span>{s.email}</span>
               <span>{new Date(s.createdAt).toLocaleDateString("en-IN")}</span>

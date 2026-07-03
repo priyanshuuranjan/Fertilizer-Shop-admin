@@ -91,7 +91,11 @@ const Orders = ({ url }) => {
               <OrderCardSkeleton key={i} />
             ))
           : orders.map((order, index) => (
-              <div key={index} className="order-item">
+              <div
+                key={index}
+                className="order-item"
+                style={{ "--i": Math.min(index, 8) }}
+              >
                 <img src={assets.parcel_icon} alt="" />
                 <div>
                   <p className="order-item-product">
@@ -137,7 +141,7 @@ const Orders = ({ url }) => {
                     onClick={() => setPrintOrder(order)}
                     title="Print packing slip"
                   >
-                    🖨️ Print
+                    <span className="print-icon">🖨️</span> Print
                   </button>
                 </div>
               </div>

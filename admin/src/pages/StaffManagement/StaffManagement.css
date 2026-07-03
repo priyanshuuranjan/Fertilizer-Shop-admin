@@ -23,39 +23,83 @@
   gap: 12px;
   flex-wrap: wrap;
   margin-bottom: 26px;
+  background: var(--sidebar);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 18px;
+  transform-style: preserve-3d;
 }
 
 .staff-form input {
   flex: 1;
   min-width: 180px;
-  padding: 10px 14px;
+  padding: 11px 14px;
   border-radius: 8px;
   border: 1px solid var(--border-color);
-  background: var(--sidebar);
+  background: var(--body-color);
   color: var(--light-text);
   font-size: 14px;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
 }
 
 .staff-form input:focus {
   border-color: tomato;
+  box-shadow: 0 0 0 3px rgba(255, 99, 71, 0.15);
+  transform: translateY(-1px);
 }
 
-.staff-form button {
-  padding: 10px 20px;
+.staff-submit-btn {
+  position: relative;
+  padding: 11px 22px;
   border-radius: 8px;
   border: none;
   background: tomato;
   color: white;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: transform 0.15s, box-shadow 0.2s, opacity 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 110px;
+  justify-content: center;
 }
 
-.staff-form button:disabled {
-  opacity: 0.6;
+.staff-submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(255, 99, 71, 0.35);
+}
+
+.staff-submit-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.97);
+}
+
+.staff-submit-btn:disabled {
+  opacity: 0.7;
   cursor: not-allowed;
+}
+
+.staff-submit-arrow {
+  display: inline-block;
+  transition: transform 0.2s;
+}
+
+.staff-submit-btn:hover:not(:disabled) .staff-submit-arrow {
+  transform: translateX(4px);
+}
+
+.staff-submit-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: staff-spin 0.7s linear infinite;
+}
+
+@keyframes staff-spin {
+  to { transform: rotate(360deg); }
 }
 
 .staff-list {
@@ -73,6 +117,11 @@
   border-bottom: 1px solid var(--border-color);
   color: var(--light-text);
   font-size: 14px;
+  transition: background 0.2s;
+}
+
+.staff-row:not(.staff-header):hover {
+  background: rgba(255, 99, 71, 0.06);
 }
 
 .staff-row:last-child {
@@ -102,14 +151,25 @@
   cursor: pointer;
   font-size: 12px;
   font-weight: 600;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.15s;
 }
 
 .staff-remove:hover {
   background: #ef444422;
+  transform: translateY(-1px);
+}
+
+.staff-remove:active {
+  transform: translateY(0) scale(0.95);
 }
 
 @media (max-width: 640px) {
+  .staff-form {
+    flex-direction: column;
+  }
+  .staff-submit-btn {
+    width: 100%;
+  }
   .staff-row {
     grid-template-columns: 1fr 1fr;
     grid-template-areas:

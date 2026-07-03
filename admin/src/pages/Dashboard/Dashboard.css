@@ -71,9 +71,11 @@
   transition: box-shadow 0.2s, transform 0.2s;
 }
 
-.stat-card:hover {
+/* Combine the base lift with the tilt-3d rotation vars so hovering doesn't
+   clobber whichever rule wins on specificity. */
+.stat-card.tilt-3d:hover {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
-  transform: translateY(-4px);
+  transform: perspective(900px) rotateX(var(--tilt-rx)) rotateY(var(--tilt-ry)) translateY(-4px);
 }
 
 .stat-card-icon {

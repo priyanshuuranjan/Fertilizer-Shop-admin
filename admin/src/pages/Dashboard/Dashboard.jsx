@@ -11,6 +11,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import Spinner from "../../components/Spinner/Spinner";
+import { useTilt } from "../../hooks/useTilt";
 import "./Dashboard.css";
 
 // Smoothly counts a number up from 0 to `target` over `duration` ms.
@@ -38,9 +39,13 @@ const useCountUp = (target, duration = 900) => {
 
 const StatCard = ({ label, rawValue, format, icon, accent, index }) => {
   const animated = useCountUp(rawValue);
+  const tilt = useTilt(8);
   return (
     <div
-      className="stat-card animate-up"
+      ref={tilt.ref}
+      onMouseMove={tilt.onMouseMove}
+      onMouseLeave={tilt.onMouseLeave}
+      className="stat-card tilt-3d animate-up"
       style={{
         borderTop: `3px solid ${accent}`,
         animationDelay: `${index * 0.08}s`,

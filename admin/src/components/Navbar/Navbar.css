@@ -59,11 +59,40 @@
 .role-badge {
   font-size: 12px;
   font-weight: 600;
-  padding: 5px 10px;
+  padding: 5px 12px 5px 9px;
   border-radius: 20px;
   border: 1px solid var(--border-color);
   color: var(--light-text-secondary);
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  animation: badgeSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.role-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+@keyframes badgeSlideIn {
+  from { opacity: 0; transform: translateX(10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.role-badge-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+  animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+  0%, 100% { box-shadow: 0 0 0 0 currentColor; opacity: 1; }
+  50% { box-shadow: 0 0 0 4px transparent; opacity: 0.6; }
 }
 
 .role-super {
@@ -78,7 +107,13 @@
 
 @media (max-width: 640px) {
   .role-badge {
-    display: none;
+    padding: 5px 8px;
+    font-size: 0;
+    gap: 0;
+  }
+  .role-badge-dot {
+    width: 9px;
+    height: 9px;
   }
 }
 

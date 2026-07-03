@@ -21,11 +21,40 @@
   padding: 8px 10px;
   border-radius: 3px 0px 0px 3px;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.2s, transform 0.2s, border-color 0.2s;
+  animation: sidebarSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.sidebar-svg {
+@keyframes sidebarSlideIn {
+  from { opacity: 0; transform: translateX(-14px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.sidebar-options > * {
+  animation-delay: calc(var(--i, 0) * 0.06s);
+}
+.sidebar-options > *:nth-child(1) { --i: 1; }
+.sidebar-options > *:nth-child(2) { --i: 2; }
+.sidebar-options > *:nth-child(3) { --i: 3; }
+.sidebar-options > *:nth-child(4) { --i: 4; }
+.sidebar-options > *:nth-child(5) { --i: 5; }
+.sidebar-options > *:nth-child(6) { --i: 6; }
+.sidebar-options > *:nth-child(7) { --i: 7; }
+
+.sidebar-option:hover {
+  background-color: var(--sidebar);
+  transform: translateX(4px);
+}
+
+.sidebar-option:hover .sidebar-svg,
+.sidebar-option:hover img {
+  transform: scale(1.12);
+}
+
+.sidebar-svg,
+.sidebar-option img {
   flex-shrink: 0;
+  transition: transform 0.2s;
 }
 
 .sidebar-option.active {
@@ -63,5 +92,12 @@
   .sidebar-option p {
     display: block;
     font-size: 11px;
+  }
+  .sidebar-option:hover {
+    transform: translateY(-2px);
+  }
+  .sidebar-option:active {
+    transform: scale(0.93);
+    background-color: var(--sidebar);
   }
 }

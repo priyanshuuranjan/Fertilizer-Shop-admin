@@ -15,7 +15,23 @@
   padding: 12px 15px;
   border: 1px solid #cacaca;
   font-size: 13px;
-  transition: background 0.15s;
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+  animation: listRowIn 0.4s ease both;
+  animation-delay: calc(var(--i, 0) * 0.04s);
+}
+
+@keyframes listRowIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.list-table-format:not(.title):hover {
+  transform: translateX(3px);
+  box-shadow: -3px 0 0 tomato;
+}
+
+.list-table-format.title {
+  animation: none;
 }
 
 .stock-badge {

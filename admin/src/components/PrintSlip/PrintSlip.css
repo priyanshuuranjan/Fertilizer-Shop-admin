@@ -68,6 +68,7 @@
   border-collapse: collapse;
   margin-bottom: 16px;
   font-size: 13px;
+  page-break-inside: avoid;
 }
 
 .ps-table th {
@@ -98,6 +99,7 @@
   margin-left: auto;
   width: 260px;
   font-size: 13px;
+  page-break-inside: avoid;
 }
 
 .ps-totals div {
@@ -124,22 +126,34 @@
 
 @media print {
   @page {
-    margin: 16mm;
+    margin: 12mm;
+    size: auto;
   }
 
-  body * {
-    visibility: hidden;
+  html, body {
+    height: auto !important;
+    background: #fff !important;
   }
 
-  .print-slip,
-  .print-slip * {
-    visibility: visible;
+  /* The slip is portaled straight onto <body>, as a sibling of #root — so
+     printing only needs to hide the app root, not fight its layout height
+     or dark-mode background (that's what caused the extra blank/black pages). */
+  #root {
+    display: none !important;
   }
 
   .print-slip {
-    position: absolute;
-    top: 0;
-    left: 0;
+    position: static !important;
+    top: auto;
+    left: auto;
     width: 100%;
+    max-width: 100%;
+    padding: 0;
+    margin: 0 auto;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }

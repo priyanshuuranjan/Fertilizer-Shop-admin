@@ -1,11 +1,13 @@
+import { createPortal } from "react-dom";
 import "./PrintSlip.css";
 
 const DELIVERY_FEE = 45;
 const BRAND = "Kumar Fertilizer Shop";
 
-// Renders a packing-slip layout for a single order. Stays off-screen in
-// normal use; @media print rules (see PrintSlip.css) make it the only
-// visible thing on the page when window.print() is triggered.
+// Renders a packing-slip layout for a single order, portaled straight onto
+// document.body (outside #root). That way, printing only needs to hide
+// #root entirely — no fragile "hide everything, un-hide the slip" CSS,
+// and no leftover blank/black pages from the app's own tall layout.
 const PrintSlip = ({ order }) => {
   if (!order) return null;
 
@@ -20,7 +22,7 @@ const PrintSlip = ({ order }) => {
     year: "numeric",
   });
 
-  return (
+  return createPortal(
     <div className="print-slip">
       <div className="ps-header">
         <div>
@@ -74,7 +76,8 @@ const PrintSlip = ({ order }) => {
       </div>
 
       <p className="ps-footer">Thank you for shopping with us! — {BRAND}</p>
-    </div>
+    </div>,
+    document.body
   );
 };
 
