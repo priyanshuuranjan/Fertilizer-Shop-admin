@@ -4,6 +4,7 @@ import {
   listProduct,
   searchProducts,
   updateStock,
+  updatePrice,
   removeProduct,
   bulkRemoveProducts,
 } from "../controllers/productController.js";
@@ -31,6 +32,7 @@ productRouter.post("/add", verifyAdmin, upload.single("image"), productRules, va
 productRouter.get("/list", listProduct);
 productRouter.get("/search", searchProducts);
 productRouter.post("/update-stock", verifyAdmin, updateStock);
+productRouter.post("/update-price", verifyAdmin, updatePrice);
 // Deleting products is Super Admin only — Staff can add/edit but not remove.
 productRouter.post("/remove", verifyAdmin, requireSuperAdmin, removeProduct);
 productRouter.post("/bulk-remove", verifyAdmin, requireSuperAdmin, bulkRemoveProducts);

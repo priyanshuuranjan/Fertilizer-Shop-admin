@@ -158,3 +158,25 @@
     min-width: 640px;
   }
 }
+
+/* Inline-editable price (same interaction as the stock badge) */
+.price-badge {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  width: fit-content;
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.price-badge.editable {
+  cursor: pointer;
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+
+.price-badge.editable:hover {
+  transform: scale(1.08);
+  filter: brightness(0.95);
+}

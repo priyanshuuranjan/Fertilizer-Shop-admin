@@ -120,6 +120,31 @@ const updateStock = async (req, res) => {
   }
 };
 
+// Update a single product's price (admin correction — MRPs change often).
+const updatePrice = async (req, res) => {
+  try {
+    const { id, price } = req.body;
+    const amount = Number(price);
+    if (!id || !Number.isFinite(amount) || amount <= 0) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Valid id and price (> 0) required" });
+    }
+    const product = await productModel.findByIdAndUpdate(
+      id,
+      { price: Math.round(amount * 100) / 100 },
+      { new: true }
+    );
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+    await cacheDel(PRODUCT_LIST_KEY);
+    res.json({ success: true, message: "Price updated", price: product.price });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 const removeProduct = async (req, res) => {
   try {
     const { id } = req.body;
@@ -163,6 +188,7 @@ export {
   listProduct,
   searchProducts,
   updateStock,
+  updatePrice,
   removeProduct,
   bulkRemoveProducts,
 };

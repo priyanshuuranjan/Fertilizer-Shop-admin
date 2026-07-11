@@ -9,34 +9,44 @@ const List = ({ url, isSuperAdmin }) => {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(new Set());
   const [bulkLoading, setBulkLoading] = useState(false);
-  const [editingId, setEditingId] = useState(null);
+  // Inline editor shared by the Stock and Price columns.
+  const [editing, setEditing] = useState(null); // { id, field: "stock" | "price" }
   const [editValue, setEditValue] = useState("");
 
-  const startEdit = (item) => {
-    setEditingId(item._id);
-    setEditValue(String(item.stock ?? 0));
+  const startEdit = (item, field) => {
+    setEditing({ id: item._id, field });
+    setEditValue(String((field === "price" ? item.price : item.stock) ?? 0));
   };
 
-  const saveStock = async (productId) => {
+  const saveEdit = async (productId) => {
+    const { field } = editing;
     const trimmed = String(editValue).trim();
-    const qty = Number(trimmed);
-    if (trimmed === "" || !Number.isFinite(qty) || qty < 0) {
-      toast.error("Enter a valid stock number (0 or more)");
+    const num = Number(trimmed);
+    const invalid =
+      trimmed === "" ||
+      !Number.isFinite(num) ||
+      (field === "price" ? num <= 0 : num < 0);
+    if (invalid) {
+      toast.error(
+        field === "price"
+          ? "Enter a valid price (more than 0)"
+          : "Enter a valid stock number (0 or more)"
+      );
       return;
     }
     try {
-      const res = await axios.post(`${url}/api/product/update-stock`, {
+      const res = await axios.post(`${url}/api/product/update-${field}`, {
         id: productId,
-        stock: qty,
+        [field]: num,
       });
       if (res.data.success) {
         setList((prev) =>
           prev.map((p) =>
-            p._id === productId ? { ...p, stock: res.data.stock } : p
+            p._id === productId ? { ...p, [field]: res.data[field] } : p
           )
         );
-        setEditingId(null);
-        toast.success("Stock updated");
+        setEditing(null);
+        toast.success(field === "price" ? "Price updated" : "Stock updated");
       } else {
         toast.error(res.data.message || "Update failed");
       }
@@ -53,6 +63,9 @@ const List = ({ url, isSuperAdmin }) => {
       }
     }
   };
+
+  const isEditing = (item, field) =>
+    editing?.id === item._id && editing.field === field;
 
   const fetchList = async () => {
     setLoading(true);
@@ -187,9 +200,8 @@ const List = ({ url, isSuperAdmin }) => {
                 <p>{item.name}</p>
                 <p>{item.category}</p>
                 <p>{item.size}</p>
-                <p>₹{item.price}</p>
                 <p>
-                  {editingId === item._id ? (
+                  {isEditing(item, "price") ? (
                     <span className="stock-edit">
                       <input
                         type="number"
@@ -198,11 +210,39 @@ const List = ({ url, isSuperAdmin }) => {
                         value={editValue}
                         onChange={(e) => setEditValue(e.target.value)}
                         onKeyDown={(e) => {
-                          if (e.key === "Enter") saveStock(item._id);
-                          if (e.key === "Escape") setEditingId(null);
+                          if (e.key === "Enter") saveEdit(item._id);
+                          if (e.key === "Escape") setEditing(null);
                         }}
                       />
-                      <button onClick={() => saveStock(item._id)} title="Save">
+                      <button onClick={() => saveEdit(item._id)} title="Save">
+                        ✓
+                      </button>
+                    </span>
+                  ) : (
+                    <span
+                      className="price-badge editable"
+                      onClick={() => startEdit(item, "price")}
+                      title="Click to edit price"
+                    >
+                      ₹{item.price}
+                    </span>
+                  )}
+                </p>
+                <p>
+                  {isEditing(item, "stock") ? (
+                    <span className="stock-edit">
+                      <input
+                        type="number"
+                        min="0"
+                        autoFocus
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") saveEdit(item._id);
+                          if (e.key === "Escape") setEditing(null);
+                        }}
+                      />
+                      <button onClick={() => saveEdit(item._id)} title="Save">
                         ✓
                       </button>
                     </span>
@@ -215,7 +255,7 @@ const List = ({ url, isSuperAdmin }) => {
                           ? "low"
                           : "in"
                       }`}
-                      onClick={() => startEdit(item)}
+                      onClick={() => startEdit(item, "stock")}
                       title="Click to edit stock"
                     >
                       {(item.stock ?? 0) === 0 ? "Out" : item.stock}
