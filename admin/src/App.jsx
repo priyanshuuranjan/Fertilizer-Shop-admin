@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import Navbar from "./components/Navbar/Navbar";
 import Sidebar from "./components/Sidebar/Sidebar";
@@ -26,10 +26,11 @@ const App = () => {
 
   // Every admin request carries the token header — the backend now enforces
   // Super Admin vs Staff on the sensitive routes regardless of what the UI hides.
-  useEffect(() => {
-    if (token) axios.defaults.headers.common["token"] = token;
-    else delete axios.defaults.headers.common["token"];
-  }, [token]);
+  // Set synchronously during render (NOT in an effect): child pages fire their
+  // data fetches in effects that run BEFORE a parent effect would, so on a hard
+  // refresh every page was hitting the API without the token and getting 401s.
+  if (token) axios.defaults.headers.common["token"] = token;
+  else delete axios.defaults.headers.common["token"];
 
   const handleLogin = (tok, userRole, userName) => {
     localStorage.setItem("adminToken", tok);

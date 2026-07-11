@@ -106,6 +106,17 @@ const Dashboard = ({ url, isSuperAdmin }) => {
     );
   }
 
+  // If the stats call failed (server down, expired token) show a message
+  // instead of crashing on stats.totalOrders below.
+  if (!stats) {
+    return (
+      <div className="dashboard">
+        <h2 className="dash-title">Dashboard</h2>
+        <p>Could not load dashboard data — check the server and refresh.</p>
+      </div>
+    );
+  }
+
   const fmtMoney = (n) =>
     n >= 1000 ? `₹${(n / 1000).toFixed(1)}k` : `₹${n}`;
 
