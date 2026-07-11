@@ -10,6 +10,7 @@ import PromoCode from "./pages/PromoCode/PromoCode";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Customers from "./pages/Customers/Customers";
 import StaffManagement from "./pages/StaffManagement/StaffManagement";
+import Insights from "./pages/Insights/Insights";
 import Login from "./components/Login/Login";
 import "./App.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -74,6 +75,7 @@ const App = () => {
           <Route path="/orders" element={<Orders url={url} />} />
           <Route path="/customers" element={<Customers url={url} />} />
           <Route path="/promocode" element={<PromoCode url={url} />} />
+          <Route path="/insights" element={<Insights url={url} />} />
           <Route
             path="/staff"
             element={
