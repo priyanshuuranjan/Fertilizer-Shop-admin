@@ -12,6 +12,7 @@ import promoRouter from "./routes/promoRoute.js";
 import adminRouter from "./routes/adminRoute.js";
 import dashboardRouter from "./routes/dashboardRoute.js";
 import customerRouter from "./routes/customerRoute.js";
+import advisorRouter from "./routes/advisorRoute.js";
 import { apiLimiter } from "./middleware/rateLimiter.js";
 import { morganMiddleware } from "./middleware/logger.js";
 import { errorHandler } from "./middleware/errorHandler.js";
@@ -55,6 +56,7 @@ app.use("/api/promo", promoRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/customers", customerRouter);
+app.use("/api/advisor", advisorRouter);
 
 app.get("/", (req, res) => {
   res.send("API Working");
