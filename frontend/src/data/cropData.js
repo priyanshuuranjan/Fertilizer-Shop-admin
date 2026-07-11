@@ -409,6 +409,39 @@ export const PROTECTION_KNOWLEDGE = [
       hi: "अनाज वाली फसलों (गेहूँ, धान, मक्का, गन्ना) में चौड़ी पत्ती के खरपतवार मारता है। सब्ज़ी या चौड़ी पत्ती वाली फसलों के लिए नहीं।",
     },
   },
+  {
+    id: "clodinafop",
+    match: ["topik", "clodinafop"],
+    selectivity: "selective",
+    crops: ["wheat"],
+    ratePerAcre: { solid: 160 },
+    note: {
+      en: "Only for wheat — kills grassy weeds like gulli danda (Phalaris minor) and wild oats without harming the wheat.",
+      hi: "केवल गेहूँ के लिए — गुल्ली डंडा और जंगली जई जैसी घास मारता है, गेहूँ को नुकसान नहीं।",
+    },
+  },
+  {
+    id: "atrazine",
+    match: ["atrataf", "atrazine"],
+    selectivity: "selective",
+    crops: ["maize", "sugarcane"],
+    ratePerAcre: { solid: 500 },
+    note: {
+      en: "For maize and sugarcane — spray on moist soil just after sowing, before the weeds come up.",
+      hi: "मक्का और गन्ने के लिए — बुवाई के तुरंत बाद, खरपतवार निकलने से पहले नम मिट्टी पर छिड़कें।",
+    },
+  },
+  {
+    id: "pretilachlor",
+    match: ["rifit", "pretilachlor"],
+    selectivity: "selective",
+    crops: ["paddy"],
+    ratePerAcre: { liquid: 500 },
+    note: {
+      en: "Only for transplanted paddy — apply within 3-4 days of transplanting to stop weeds before they sprout.",
+      hi: "केवल रोपाई वाले धान के लिए — रोपाई के 3-4 दिन के अंदर डालें ताकि खरपतवार उगने से पहले ही रुक जाएँ।",
+    },
+  },
   // Popular insecticides / fungicides — notes + tutorial videos.
   {
     id: "confidor",
