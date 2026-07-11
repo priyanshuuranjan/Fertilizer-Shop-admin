@@ -7,6 +7,7 @@ import menu_3 from './menu_3.png'
 import menu_4 from "./menu_4.png";
 import menu_5 from "./menu_5.png";
 import menu_6 from "./menu_6.png";
+import menu_7 from "./menu_7.png";
 
 // products list
 import item_1 from "./item_1.png";
@@ -61,6 +62,10 @@ export const menu_list = [
   {
     menu_name: "Fungicides",
     menu_image: menu_3,
+  },
+  {
+    menu_name: "Insecticide",
+    menu_image: menu_7,
   },
   {
     menu_name: "Herbicide",

@@ -105,6 +105,8 @@ const Add = ({ url }) => {
               {""}
               <option value="Fungicides">Fungicides</option>
               {""}
+              <option value="Insecticide">Insecticide</option>
+              {""}
               <option value="Vegetable Seeds">Vegetable Seeds</option>
               {""}
               <option value="Herbicide">Herbicide</option>
